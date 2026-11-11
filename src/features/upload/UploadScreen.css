@@ -1,0 +1,1074 @@
+/* ==========================================================
+   LOGLENS — UPLOAD SCREEN
+   Visual design, interactions and animations
+========================================================== */
+
+/* ==========================================================
+   1. HEADER
+========================================================== */
+
+.ll-upload-header {
+  animation: ll-fade-down 0.7s ease-out both;
+}
+
+.ll-upload-subtitle {
+  color: #b5c0df;
+}
+
+/* ==========================================================
+   2. OFFICIAL LOGLENS LOGO
+========================================================== */
+
+.ll-brand {
+  position: relative;
+  isolation: isolate;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Subtle animated glow behind the logo */
+
+.ll-brand::before {
+  content: '';
+
+  position: absolute;
+  z-index: -1;
+
+  top: 50%;
+  left: 0;
+
+  width: 76px;
+  height: 76px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(245, 26, 131, 0.4) 0%,
+    rgba(139, 53, 245, 0.25) 35%,
+    transparent 75%
+  );
+
+  filter: blur(20px);
+
+  pointer-events: none;
+
+  animation: ll-brand-breathe 6s ease-in-out infinite;
+}
+
+/* Official SVG — no hover effects */
+
+.ll-brand__image {
+  position: relative;
+  z-index: 1;
+
+  display: block;
+}
+
+/* ==========================================================
+   3. DROPZONE
+========================================================== */
+
+.ll-dropzone {
+  position: relative;
+
+  display: flex;
+  min-height: 425px;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 34px 28px;
+
+  border: 1.5px dashed rgba(155, 91, 248, 0.48);
+  border-radius: 24px;
+
+  background: rgba(10, 16, 45, 0.74);
+
+  text-align: center;
+
+  backdrop-filter: blur(14px);
+
+  transition:
+    border-color 300ms ease,
+    background 300ms ease,
+    box-shadow 300ms ease;
+
+  animation: ll-fade-up 0.8s ease-out 0.1s both;
+}
+
+/* Active dragging */
+
+.ll-dropzone--active {
+  border-color: #f52c9d;
+
+  background: rgba(41, 19, 77, 0.84);
+
+  box-shadow:
+    0 0 0 1px rgba(245, 26, 131, 0.25),
+    0 0 45px rgba(178, 45, 237, 0.16),
+    inset 0 0 55px rgba(139, 53, 245, 0.08);
+}
+
+/* ==========================================================
+   4. UPLOAD CONTENT
+========================================================== */
+
+.ll-upload-content {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 760px;
+}
+
+/* ==========================================================
+   5. MAIN UPLOAD ICON
+========================================================== */
+
+.ll-upload-symbol {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 144px;
+  height: 144px;
+
+  margin-bottom: 20px;
+}
+
+/* Concentric rings */
+
+.ll-upload-ring {
+  position: absolute;
+
+  border: 1px solid rgba(172, 69, 245, 0.12);
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+.ll-upload-ring--outer {
+  width: 200px;
+  height: 200px;
+
+  opacity: 0.35;
+}
+
+.ll-upload-ring--middle {
+  width: 165px;
+  height: 165px;
+
+  opacity: 0.45;
+}
+
+.ll-upload-ring--inner {
+  width: 135px;
+  height: 135px;
+
+  opacity: 0.6;
+}
+
+/* Floating document icon */
+
+.ll-upload-icon {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 122px;
+  height: 122px;
+
+  border-radius: 26px;
+
+  background: rgba(107, 40, 208, 0.13);
+
+  box-shadow: 0 0 55px rgba(156, 40, 239, 0.09);
+
+  animation: ll-icon-floating 5s ease-in-out infinite;
+
+  transition:
+    background 300ms ease,
+    box-shadow 300ms ease;
+}
+
+/* Dropzone hover */
+
+.ll-dropzone:hover .ll-upload-icon {
+  background: rgba(125, 44, 220, 0.18);
+
+  box-shadow: 0 0 60px rgba(195, 41, 233, 0.15);
+}
+
+/* Stronger effect while dragging */
+
+.ll-dropzone--active .ll-upload-icon {
+  background: rgba(166, 42, 220, 0.22);
+
+  box-shadow:
+    0 0 45px rgba(202, 47, 243, 0.24),
+    0 0 85px rgba(245, 26, 131, 0.12);
+}
+
+/* ==========================================================
+   6. TITLE AND DESCRIPTION
+========================================================== */
+
+.ll-upload-title {
+  margin: 0;
+
+  color: #f8f9ff;
+
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 700;
+
+  letter-spacing: -0.6px;
+  line-height: 1.25;
+}
+
+.ll-upload-description {
+  margin-top: 10px;
+
+  color: #e454fa;
+
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* ==========================================================
+   7. MAIN BUTTON
+========================================================== */
+
+.ll-upload-button {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  min-height: 54px;
+  margin-top: 24px;
+  padding: 0 32px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: linear-gradient(100deg, #7924f3 0%, #bc2ef0 30%, #f51a83 65%, #ff914d 100%);
+
+  background-clip: padding-box;
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 22px rgba(245, 26, 131, 0.13);
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    filter 200ms ease;
+}
+
+/* Button hover */
+
+.ll-upload-button:hover {
+  transform: translateY(-2px);
+
+  filter: brightness(1.06);
+
+  box-shadow: 0 8px 28px rgba(245, 26, 131, 0.22);
+}
+
+/* Button pressed */
+
+.ll-upload-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Keyboard focus */
+
+.ll-upload-button:focus-visible,
+.ll-remove-button:focus-visible {
+  outline: 2px solid #f7a4ff;
+  outline-offset: 4px;
+}
+
+/* ==========================================================
+   8. FILE INFORMATION
+========================================================== */
+
+.ll-upload-formats {
+  margin-top: 20px;
+
+  color: #acb8da;
+
+  font-size: 14px;
+}
+
+.ll-upload-privacy {
+  margin-top: 8px;
+
+  color: #8f9fc7;
+
+  font-size: 13px;
+}
+
+/* ==========================================================
+   9. DRAGGING MESSAGE
+========================================================== */
+
+.ll-dropzone-message {
+  position: absolute;
+  z-index: 3;
+
+  top: 14px;
+  left: 50%;
+
+  max-width: calc(100% - 32px);
+
+  padding: 10px 20px;
+
+  border: 1px solid rgba(245, 26, 131, 0.35);
+  border-radius: 10px;
+
+  background: rgba(245, 26, 131, 0.12);
+
+  color: #ffb8e4;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  animation: ll-message-appear 250ms ease-out both;
+}
+
+/* ==========================================================
+   10. UPLOAD STEPS
+========================================================== */
+
+.ll-upload-steps {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 38px;
+
+  counter-reset: ll-step;
+
+  animation: ll-fade-up 0.8s ease-out 0.25s both;
+}
+
+.ll-upload-step {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 17px;
+
+  min-width: 0;
+  padding: 10px;
+
+  counter-increment: ll-step;
+}
+
+/* ==========================================================
+   11. STEP ICONS
+========================================================== */
+
+.ll-upload-step__icon {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 64px;
+  height: 64px;
+
+  border-radius: 16px;
+}
+
+.ll-upload-step__icon svg {
+  width: 29px;
+  height: 29px;
+}
+
+/* Step 01 — Violet */
+
+.ll-upload-step__icon--file {
+  color: #a746ff;
+
+  background: rgba(117, 42, 215, 0.14);
+
+  border: 1px solid rgba(157, 67, 250, 0.16);
+}
+
+/* Step 02 — Magenta */
+
+.ll-upload-step__icon--search {
+  color: #ff399b;
+
+  background: rgba(245, 26, 131, 0.11);
+
+  border: 1px solid rgba(245, 26, 131, 0.16);
+}
+
+/* Step 03 — Orange */
+
+.ll-upload-step__icon--chart {
+  color: #ffb333;
+
+  background: rgba(255, 165, 42, 0.1);
+
+  border: 1px solid rgba(255, 165, 42, 0.14);
+}
+
+/* Step numbers */
+
+.ll-upload-step__icon::after {
+  content: counter(ll-step, decimal-leading-zero);
+
+  position: absolute;
+
+  top: -9px;
+  right: -10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 25px;
+  height: 21px;
+
+  padding: 0 5px;
+
+  border: 1px solid rgba(157, 67, 250, 0.3);
+  border-radius: 7px;
+
+  background: #12102d;
+
+  color: #d6b4ff;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Step 02 number */
+
+.ll-upload-step__icon--search::after {
+  border-color: rgba(245, 26, 131, 0.35);
+
+  color: #ff80c7;
+}
+
+/* Step 03 number */
+
+.ll-upload-step__icon--chart::after {
+  border-color: rgba(255, 165, 42, 0.3);
+
+  color: #ffc16b;
+}
+
+/* ==========================================================
+   12. STEP TEXT
+========================================================== */
+
+.ll-upload-step__content {
+  min-width: 0;
+}
+
+.ll-upload-step__content h3 {
+  margin: 0;
+
+  color: #f6f7ff;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ll-upload-step__content p {
+  margin-top: 5px;
+
+  color: #a6b4d9;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ==========================================================
+   13. STEP CONNECTORS
+========================================================== */
+
+/*
+ * Static arrows between steps:
+ * - 3px line
+ * - 9px arrowhead
+ * - Violet/lavender gradient
+ * - No hover
+ * - No animations
+ */
+
+@media (min-width: 1100px) {
+  /* Horizontal line */
+
+  .ll-upload-step:not(:last-child)::after {
+    content: '';
+
+    position: absolute;
+
+    top: 50%;
+    right: -32px;
+
+    width: 52px;
+    height: 3px;
+
+    transform: translateY(-50%);
+
+    border-radius: 999px;
+
+    background: linear-gradient(
+      90deg,
+      rgba(139, 53, 245, 0.2) 0%,
+      rgba(157, 100, 235, 0.65) 55%,
+      rgba(182, 135, 250, 0.9) 100%
+    );
+
+    pointer-events: none;
+  }
+
+  /* Arrowhead */
+
+  .ll-upload-step:not(:last-child)::before {
+    content: '';
+
+    position: absolute;
+
+    top: calc(50% - 4.5px);
+    right: -33px;
+
+    width: 9px;
+    height: 9px;
+
+    border-top: 2.5px solid rgba(182, 135, 250, 0.9);
+    border-right: 2.5px solid rgba(182, 135, 250, 0.9);
+
+    border-radius: 1px;
+
+    transform: rotate(45deg);
+
+    pointer-events: none;
+  }
+}
+
+/* ==========================================================
+   14. SELECTED FILE ICON
+========================================================== */
+
+.ll-selected-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 82px;
+  height: 82px;
+
+  margin-bottom: 20px;
+
+  border-radius: 20px;
+
+  background: rgba(139, 53, 245, 0.12);
+
+  color: #ad58f7;
+}
+
+.ll-selected-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+/* ==========================================================
+   15. FILE DETAILS CARD
+========================================================== */
+
+.ll-file-card {
+  display: flex;
+  align-items: center;
+
+  gap: 17px;
+
+  width: 100%;
+  max-width: 520px;
+
+  margin-top: 25px;
+  padding: 19px 22px;
+
+  border: 1px solid rgba(139, 53, 245, 0.26);
+  border-radius: 14px;
+
+  background: rgba(15, 22, 55, 0.75);
+
+  text-align: left;
+}
+
+/* File icon */
+
+.ll-file-card__icon {
+  flex-shrink: 0;
+
+  color: #bb64ff;
+}
+
+.ll-file-card__icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* File details */
+
+.ll-file-card__details {
+  flex: 1;
+  min-width: 0;
+}
+
+.ll-file-card__name {
+  overflow-wrap: anywhere;
+
+  color: #f6f7ff;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ll-file-card__size {
+  margin-top: 5px;
+
+  color: #a6b4d9;
+
+  font-size: 13px;
+}
+
+/* Success indicator */
+
+.ll-file-card__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 26px;
+  height: 26px;
+
+  border-radius: 50%;
+
+  background: rgba(16, 185, 129, 0.12);
+
+  color: #34d399;
+}
+
+.ll-file-success {
+  margin-top: 18px;
+
+  color: #34d399;
+
+  font-size: 14px;
+}
+
+/* ==========================================================
+   16. FILE ACTIONS
+========================================================== */
+
+.ll-file-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* Secondary button */
+
+.ll-remove-button {
+  min-height: 54px;
+
+  margin-top: 24px;
+  padding: 0 26px;
+
+  border: 1px solid rgba(139, 53, 245, 0.36);
+  border-radius: 12px;
+
+  background: rgba(139, 53, 245, 0.08);
+
+  color: #d9ccf7;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 200ms ease,
+    border-color 200ms ease;
+}
+
+.ll-remove-button:hover {
+  background: rgba(139, 53, 245, 0.16);
+
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+/* ==========================================================
+   17. VALIDATION ERRORS
+========================================================== */
+
+.ll-upload-error {
+  margin-top: 18px;
+  padding: 11px 17px;
+
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+
+  background: rgba(239, 68, 68, 0.1);
+
+  color: #fda4af;
+
+  font-size: 13px;
+}
+
+/* ==========================================================
+   18. ENTRANCE ANIMATIONS
+========================================================== */
+
+/* Header entrance */
+
+@keyframes ll-fade-down {
+  from {
+    opacity: 0;
+
+    transform: translateY(-14px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+/* Content entrance */
+
+@keyframes ll-fade-up {
+  from {
+    opacity: 0;
+
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+/* Floating document icon */
+
+@keyframes ll-icon-floating {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Drag message entrance */
+
+@keyframes ll-message-appear {
+  from {
+    opacity: 0;
+
+    transform: translate(-50%, 8px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ==========================================================
+   19. ANIMATED LOGO GLOW
+========================================================== */
+
+/*
+ * Only the glow is animated.
+ * The official logo itself remains static.
+ */
+
+@keyframes ll-brand-breathe {
+  0%,
+  100% {
+    opacity: 0.2;
+
+    transform: translateY(-50%) scale(0.85);
+  }
+
+  50% {
+    opacity: 0.55;
+
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+
+/* ==========================================================
+   20. RESPONSIVE
+========================================================== */
+
+/* Tablets */
+
+@media (max-width: 1099px) {
+  .ll-upload-steps {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+    max-width: 450px;
+  }
+
+  .ll-dropzone {
+    min-height: 420px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 640px) {
+  .ll-dropzone {
+    min-height: 390px;
+
+    padding: 30px 18px;
+  }
+
+  .ll-upload-symbol {
+    width: 122px;
+    height: 122px;
+  }
+
+  .ll-upload-icon {
+    width: 104px;
+    height: 104px;
+  }
+
+  .ll-upload-icon svg {
+    width: 70px;
+    height: 70px;
+  }
+
+  .ll-upload-ring--outer {
+    width: 155px;
+    height: 155px;
+  }
+
+  .ll-upload-ring--middle {
+    width: 135px;
+    height: 135px;
+  }
+
+  .ll-upload-ring--inner {
+    width: 110px;
+    height: 110px;
+  }
+
+  .ll-upload-title {
+    font-size: 24px;
+  }
+
+  .ll-upload-description {
+    font-size: 16px;
+  }
+
+  .ll-upload-button {
+    padding: 0 23px;
+  }
+
+  .ll-file-card {
+    padding: 15px;
+  }
+
+  .ll-dropzone-message {
+    font-size: 12px;
+
+    white-space: normal;
+  }
+
+  .ll-brand::before {
+    width: 65px;
+    height: 65px;
+  }
+}
+
+/* ==========================================================
+   21. ACCESSIBILITY
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .ll-upload-header,
+  .ll-dropzone,
+  .ll-upload-steps,
+  .ll-upload-icon,
+  .ll-dropzone-message,
+  .ll-brand::before {
+    animation: none;
+  }
+
+  .ll-brand::before {
+    opacity: 0.25;
+
+    transform: translateY(-50%);
+  }
+
+  .ll-upload-button,
+  .ll-remove-button {
+    transition: none;
+  }
+
+  .ll-upload-button:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================
+   22. LOGLENS — STRONG GRADIENT SHIMMER
+   The logo stays completely still.
+========================================================== */
+
+.ll-brand {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.ll-brand__image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  transform: none;
+  filter: none;
+  transition: none;
+  pointer-events: none;
+}
+
+.ll-brand:hover .ll-brand__image {
+  transform: none;
+  filter: none;
+}
+
+.ll-brand::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 28%,
+    rgba(139, 53, 245, 0.25) 36%,
+    rgba(186, 85, 255, 0.65) 42%,
+    rgba(255, 92, 198, 0.95) 47%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 220, 245, 0.95) 53%,
+    rgba(255, 145, 77, 0.7) 58%,
+    rgba(255, 145, 77, 0.2) 65%,
+    transparent 73%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  -webkit-mask-image: url('/LogLens_loglens-horizontal.svg');
+  mask-image: url('/LogLens_loglens-horizontal.svg');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  filter: drop-shadow(0 0 6px rgba(255, 110, 210, 0.65))
+    drop-shadow(0 0 10px rgba(160, 65, 255, 0.35));
+  opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ll-brand:hover::after {
+    animation: ll-logo-shimmer-strong 1.2s ease-in-out 1 both;
+  }
+}
+
+@keyframes ll-logo-shimmer-strong {
+  0% {
+    background-position: 100% 0;
+    opacity: 0;
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 0;
+    opacity: 0;
+  }
+}
+
+.ll-brand:focus-visible {
+  outline: 2px solid #e7a6ff;
+  outline-offset: 5px;
+}
+
+.ll-brand:focus-visible::after {
+  animation: ll-logo-shimmer-strong 1.2s ease-in-out 1 both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ll-brand::after,
+  .ll-brand:hover::after,
+  .ll-brand:focus-visible::after {
+    animation: none;
+    opacity: 0;
+  }
+}

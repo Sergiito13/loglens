@@ -112,8 +112,7 @@ const curves: CurveConfig[] = [
 // position on every React render.
 
 function noise(index: number, seed: number): number {
-  const value =
-    Math.sin((index + 1) * 127.1 + seed * 311.7) * 43758.5453;
+  const value = Math.sin((index + 1) * 127.1 + seed * 311.7) * 43758.5453;
 
   return value - Math.floor(value);
 }
@@ -131,52 +130,46 @@ const PARTICLE_COUNT = 42;
  * Particles move toward the center and fade out.
  */
 
-const particles: Particle[] = Array.from(
-  { length: PARTICLE_COUNT },
-  (_, index) => {
-    const randomX = noise(index, 1);
-    const randomY = noise(index, 2);
+const particles: Particle[] = Array.from({ length: PARTICLE_COUNT }, (_, index) => {
+  const randomX = noise(index, 1);
+  const randomY = noise(index, 2);
 
-    // Initial position based on the assigned edge.
-    const [x, y] =
-      index < 14
-        ? [2 + randomX * 18, 7 + randomY * 84]
-        : index < 28
-          ? [80 + randomX * 18, 7 + randomY * 84]
-          : index < 38
-            ? [8 + randomX * 84, 2 + randomY * 14]
-            : [
-                15 + (index - 38) * 23 + (randomX - 0.5) * 8,
-                88 + randomY * 10,
-              ];
+  // Initial position based on the assigned edge.
+  const [x, y] =
+    index < 14
+      ? [2 + randomX * 18, 7 + randomY * 84]
+      : index < 28
+        ? [80 + randomX * 18, 7 + randomY * 84]
+        : index < 38
+          ? [8 + randomX * 84, 2 + randomY * 14]
+          : [15 + (index - 38) * 23 + (randomX - 0.5) * 8, 88 + randomY * 10];
 
-    // Destination near the center.
-    const targetX = 50 + (noise(index, 3) - 0.5) * 18;
-    const targetY = 50 + (noise(index, 4) - 0.5) * 18;
+  // Destination near the center.
+  const targetX = 50 + (noise(index, 3) - 0.5) * 18;
+  const targetY = 50 + (noise(index, 4) - 0.5) * 18;
 
-    return {
-      id: index,
-      x,
-      y,
+  return {
+    id: index,
+    x,
+    y,
 
-      // Larger particles: 8–13 pixels.
-      size: 8 + noise(index, 5) * 5,
+    // Larger particles: 8–13 pixels.
+    size: 8 + noise(index, 5) * 5,
 
-      // Different movement durations.
-      duration: 12 + noise(index, 6) * 12,
+    // Different movement durations.
+    duration: 12 + noise(index, 6) * 12,
 
-      // Staggered animation start.
-      delay: noise(index, 7) * 24,
+    // Staggered animation start.
+    delay: noise(index, 7) * 24,
 
-      // Movement toward the center.
-      moveX: (targetX - x) * 0.9,
-      moveY: (targetY - y) * 0.9,
+    // Movement toward the center.
+    moveX: (targetX - x) * 0.9,
+    moveY: (targetY - y) * 0.9,
 
-      // Pink, violet or orange.
-      color: index % 3,
-    };
-  },
-);
+    // Pink, violet or orange.
+    color: index % 3,
+  };
+});
 
 /* ==========================================================
    4. AMBIENT BACKGROUND
@@ -306,13 +299,7 @@ export function AmbientBackground() {
           </radialGradient>
 
           {/* Curve glow */}
-          <filter
-            id="ll-curve-blur"
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-          >
+          <filter id="ll-curve-blur" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="8" />
           </filter>
         </defs>

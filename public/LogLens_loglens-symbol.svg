@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">LogLens</title>
+  <desc id="logo-desc">Tres barras redondeadas de distinta altura, de violeta a rosa y naranja.</desc>
+  <defs>
+    <linearGradient id="leftBar" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#8134F6"/>
+      <stop offset="0.53" stop-color="#D72CF1"/>
+      <stop offset="1" stop-color="#F83FA5"/>
+    </linearGradient>
+    <linearGradient id="centerBar" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#BD24EA"/>
+      <stop offset="0.35" stop-color="#EC32B4"/>
+      <stop offset="0.66" stop-color="#FC6382"/>
+      <stop offset="1" stop-color="#FFB451"/>
+    </linearGradient>
+    <linearGradient id="rightBar" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#DF25B5"/>
+      <stop offset="0.45" stop-color="#F746A0"/>
+      <stop offset="1" stop-color="#FF9656"/>
+    </linearGradient>
+  </defs>
+  <g id="loglens-bars">
+    <rect x="4" y="30" width="13" height="28" rx="6.5" fill="url(#leftBar)"/>
+    <rect x="23.5" y="5" width="13" height="53" rx="6.5" fill="url(#centerBar)"/>
+    <rect x="43" y="18" width="13" height="40" rx="6.5" fill="url(#rightBar)"/>
+  </g>
+</svg>

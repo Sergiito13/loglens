@@ -14,12 +14,7 @@
   overflow: hidden;
   pointer-events: none;
 
-  background: radial-gradient(
-    ellipse at 50% 38%,
-    #080e29 0%,
-    #050922 62%,
-    #04071a 100%
-  );
+  background: radial-gradient(ellipse at 50% 38%, #080e29 0%, #050922 62%, #04071a 100%);
 }
 
 /* ==========================================================
@@ -226,12 +221,7 @@
   /* Maximum brightness */
 
   30% {
-    transform: translate3d(
-        calc(var(--move-x) * 0.3),
-        calc(var(--move-y) * 0.3),
-        0
-      )
-      scale(1);
+    transform: translate3d(calc(var(--move-x) * 0.3), calc(var(--move-y) * 0.3), 0) scale(1);
 
     opacity: 0.85;
   }
