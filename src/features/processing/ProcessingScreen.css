@@ -1,0 +1,421 @@
+/* ==========================================================
+   LOGLENS — COMPACT PROCESSING SCREEN
+   Full width; no enclosing panel. Uses real Worker progress.
+========================================================== */
+
+.ll-p-page {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100svh;
+  overflow-x: hidden;
+  padding: clamp(16px, 2.4vh, 24px) 24px 22px;
+  background: #040925;
+  color: #f6f7ff;
+}
+
+.ll-p-header,
+.ll-p-layout {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.ll-p-header {
+  text-align: center;
+}
+
+.ll-p-header a {
+  display: inline-block;
+}
+
+.ll-p-header img {
+  display: block;
+  width: auto;
+  height: clamp(46px, 6vh, 58px);
+  margin: 0 auto;
+}
+
+.ll-p-header p {
+  margin: 4px 0 0;
+  color: #afbddb;
+  font-size: 14px;
+}
+
+.ll-p-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1130px;
+  margin: clamp(19px, 3vh, 31px) auto 0;
+  text-align: center;
+}
+
+/* Selected file: no card around the analysis */
+.ll-p-file {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(100%, 545px);
+  min-width: 0;
+  padding: 4px 8px 12px;
+  border-bottom: 1px solid rgba(172, 75, 244, 0.32);
+}
+
+.ll-p-file-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: #b75bff;
+}
+
+.ll-p-file-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.ll-p-file-text strong {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.ll-p-file-text small {
+  color: #aab7d9;
+  font-size: 12px;
+}
+
+.ll-p-close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border: 1px solid rgba(154, 150, 207, 0.35);
+  border-radius: 50%;
+  background: rgba(12, 18, 49, 0.7);
+  color: #d3d5f3;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ll-p-close:hover {
+  border-color: #f51a83;
+  background: rgba(245, 26, 131, 0.13);
+}
+
+/* Heading */
+.ll-p-heading {
+  margin-top: clamp(23px, 4vh, 37px);
+}
+
+.ll-p-heading h1 {
+  margin: 0;
+  font-size: clamp(25px, 3.1vw, 36px);
+  font-weight: 720;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.ll-p-heading p {
+  margin: 8px 0 0;
+  color: #b6c1e0;
+  font-size: clamp(13px, 1.25vw, 15px);
+}
+
+/* Four visually connected phases */
+.ll-p-phases {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin-top: clamp(28px, 4.6vh, 43px);
+}
+
+.ll-p-phase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 6px;
+}
+
+.ll-p-phase-icon {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 49px;
+  height: 49px;
+  border: 2px solid rgba(136, 125, 209, 0.35);
+  border-radius: 50%;
+  background: rgba(10, 16, 43, 0.86);
+  color: #777fa8;
+  transition: border-color 450ms, color 450ms, background 450ms, box-shadow 450ms;
+}
+
+.ll-p-phase:not(:last-child)::after,
+.ll-p-phase:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: calc(50% + 34px);
+  right: calc(-50% + 34px);
+  height: 3px;
+  border-radius: 99px;
+}
+
+.ll-p-phase:not(:last-child)::after {
+  background: rgba(121, 111, 189, 0.28);
+}
+
+.ll-p-phase:not(:last-child)::before {
+  z-index: 1;
+  background: linear-gradient(90deg, #8b35f5, #f51a83, #ff914d);
+  box-shadow: 0 0 14px rgba(245, 26, 131, 0.25);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 850ms ease-in-out;
+}
+
+.ll-p-phase--done:not(:last-child)::before {
+  transform: scaleX(1);
+}
+
+.ll-p-phase--done .ll-p-phase-icon {
+  border-color: #af4cff;
+  background: rgba(139, 53, 245, 0.19);
+  color: #dca6ff;
+  box-shadow: 0 0 15px rgba(139, 53, 245, 0.23);
+}
+
+.ll-p-phase--active .ll-p-phase-icon {
+  border-color: #f51a83;
+  background: rgba(245, 26, 131, 0.14);
+  color: #ff83cc;
+  box-shadow: 0 0 0 5px rgba(245, 26, 131, 0.07), 0 0 23px rgba(245, 26, 131, 0.24);
+  animation: ll-p-phase-pulse 1.6s ease-in-out infinite;
+}
+
+.ll-p-phase strong {
+  margin-top: 3px;
+  font-size: clamp(12px, 1.25vw, 15px);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.ll-p-phase small {
+  color: #a2b0d0;
+  font-size: clamp(11px, 1vw, 12px);
+  line-height: 1.3;
+}
+
+.ll-p-phase--pending strong {
+  color: #9ea8cb;
+}
+
+/* Real byte progress */
+.ll-p-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: clamp(30px, 5vh, 47px);
+}
+
+.ll-p-progress-track {
+  flex: 1;
+  height: 15px;
+  overflow: hidden;
+  border: 1px solid rgba(129, 103, 197, 0.27);
+  border-radius: 100px;
+  background: rgba(41, 46, 94, 0.57);
+}
+
+.ll-p-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8426fa, #bd2ded 27%, #f51a83 68%, #ff914d);
+  box-shadow: 0 0 18px rgba(245, 26, 131, 0.34);
+  transition: width 180ms ease-out;
+}
+
+.ll-p-progress strong {
+  flex-shrink: 0;
+  min-width: 66px;
+  text-align: right;
+  font-size: 23px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ll-p-progress-description {
+  margin: 9px 0 0;
+  color: #aab8da;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Statistics without bulky cards */
+.ll-p-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 920px;
+  margin-top: clamp(29px, 5vh, 46px);
+}
+
+.ll-p-metric {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+  text-align: left;
+}
+
+.ll-p-metric-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 49px;
+  height: 49px;
+  border: 1px solid rgba(166, 76, 244, 0.24);
+  border-radius: 12px;
+  background: rgba(123, 46, 224, 0.13);
+}
+
+.ll-p-metric-icon--violet { color: #b85aff; }
+.ll-p-metric-icon--pink { color: #ff439f; border-color: rgba(245, 26, 131, 0.22); background: rgba(245, 26, 131, 0.09); }
+.ll-p-metric-icon--orange { color: #ffb64a; border-color: rgba(255, 145, 77, 0.22); background: rgba(255, 145, 77, 0.08); }
+
+.ll-p-metric > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ll-p-metric strong {
+  font-size: clamp(19px, 2.2vw, 26px);
+  font-variant-numeric: tabular-nums;
+}
+
+.ll-p-metric small {
+  color: #a5b4d7;
+  font-size: 12px;
+}
+
+/* Action */
+.ll-p-actions {
+  min-height: 40px;
+  margin-top: clamp(19px, 3.4vh, 29px);
+}
+
+.ll-p-actions p {
+  margin: 11px 0 0;
+  color: #a8b5d9;
+  font-size: 12px;
+}
+
+.ll-p-action {
+  min-height: 41px;
+  padding: 0 22px;
+  border: 1px solid rgba(171, 128, 244, 0.36);
+  border-radius: 10px;
+  background: rgba(119, 42, 210, 0.12);
+  color: #e5d9ff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ll-p-action:hover {
+  background: rgba(119, 42, 210, 0.25);
+}
+
+.ll-p-action--primary {
+  border-color: transparent;
+  background: linear-gradient(100deg, #7924f3, #f51a83 65%, #ff914d);
+  color: white;
+}
+
+.ll-p-error {
+  max-width: 700px;
+  margin: 26px 0 0;
+  padding: 12px 17px;
+  border: 1px solid rgba(245, 26, 131, 0.3);
+  border-radius: 10px;
+  background: rgba(245, 26, 131, 0.09);
+  color: #ffb7d2;
+  font-size: 13px;
+}
+
+.ll-p-close:focus-visible,
+.ll-p-action:focus-visible {
+  outline: 2px solid #f7a4ff;
+  outline-offset: 3px;
+}
+
+@keyframes ll-p-phase-pulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(245, 26, 131, 0.05), 0 0 18px rgba(245, 26, 131, 0.16); }
+  50% { box-shadow: 0 0 0 8px rgba(245, 26, 131, 0.08), 0 0 26px rgba(245, 26, 131, 0.27); }
+}
+
+@media (max-height: 780px) and (min-width: 781px) {
+  .ll-p-page { padding-top: 12px; padding-bottom: 12px; }
+  .ll-p-header img { height: 46px; }
+  .ll-p-layout { margin-top: 13px; }
+  .ll-p-heading { margin-top: 17px; }
+  .ll-p-phases { margin-top: 21px; }
+  .ll-p-progress { margin-top: 21px; }
+  .ll-p-metrics { margin-top: 19px; }
+  .ll-p-actions { margin-top: 12px; }
+}
+
+@media (max-width: 780px) {
+  .ll-p-page { padding: 19px 16px 30px; }
+  .ll-p-phases { gap: 2px; }
+  .ll-p-phase { padding: 0 2px; }
+  .ll-p-phase:not(:last-child)::after,
+  .ll-p-phase:not(:last-child)::before {
+    left: calc(50% + 27px);
+    right: calc(-50% + 27px);
+  }
+  .ll-p-phase-icon { width: 43px; height: 43px; }
+  .ll-p-phase:not(:last-child)::after,
+  .ll-p-phase:not(:last-child)::before { top: 21px; }
+  .ll-p-metrics { gap: 12px; }
+  .ll-p-metric { gap: 8px; }
+  .ll-p-metric-icon { width: 43px; height: 43px; }
+  .ll-p-metric strong { font-size: 20px; }
+}
+
+@media (max-width: 560px) {
+  .ll-p-heading { margin-top: 25px; }
+  .ll-p-phase strong { font-size: 10px; }
+  .ll-p-phase small { display: none; }
+  .ll-p-metrics { grid-template-columns: 1fr; max-width: 240px; gap: 14px; }
+  .ll-p-metric { justify-content: flex-start; }
+  .ll-p-progress { gap: 8px; }
+  .ll-p-progress strong { min-width: 53px; font-size: 19px; }
+  .ll-p-phase-icon { width: 39px; height: 39px; }
+  .ll-p-phase:not(:last-child)::after,
+  .ll-p-phase:not(:last-child)::before { top: 19px; left: calc(50% + 24px); right: calc(-50% + 24px); height: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ll-p-phase-icon { animation: none !important; transition: none; }
+  .ll-p-phase:not(:last-child)::before,
+  .ll-p-progress-fill { transition: none; }
+}

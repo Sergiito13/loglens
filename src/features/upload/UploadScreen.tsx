@@ -14,6 +14,10 @@ interface UploadStep {
   icon: StepIconType;
 }
 
+interface UploadScreenProps {
+  onAnalyze: (file: File) => void;
+}
+
 function StepIcon({ type }: { type: StepIconType }) {
   if (type === 'file') {
     return (
@@ -128,6 +132,24 @@ function FolderIcon() {
   );
 }
 
+function PlayIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M8 5.5 19 12 8 18.5V5.5Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 const uploadSteps: UploadStep[] = [
   {
     id: 1,
@@ -149,10 +171,9 @@ const uploadSteps: UploadStep[] = [
   },
 ];
 
-export function UploadScreen() {
+export function UploadScreen({ onAnalyze }: UploadScreenProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
-
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -162,17 +183,14 @@ export function UploadScreen() {
     setFile(null);
 
     const fileName = selectedFile.name.toLowerCase();
-
     if (!fileName.endsWith('.log') && !fileName.endsWith('.txt')) {
       setError('Solo se permiten archivos con extensión .log o .txt.');
       return;
     }
-
     if (selectedFile.size === 0) {
       setError('El archivo seleccionado está vacío.');
       return;
     }
-
     setFile(selectedFile);
   }
 
@@ -203,15 +221,12 @@ export function UploadScreen() {
     event.preventDefault();
     dragCounter.current = 0;
     setIsDragging(false);
-
     const files = event.dataTransfer.files;
-
     if (files.length !== 1) {
       setFile(null);
       setError('Selecciona un único archivo de log.');
       return;
     }
-
     handleFile(files[0]);
   }
 
@@ -223,8 +238,6 @@ export function UploadScreen() {
   return (
     <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-background px-5 pb-8 pt-6 text-text-primary sm:px-8">
       <AmbientBackground />
-
-      {/* Official logo: stronger shimmer on hover, reload on click. */}
       <header className="ll-upload-header relative z-10 text-center">
         <h1 className="flex items-center justify-center">
           <a href="/" className="ll-brand" aria-label="Volver al inicio de LogLens">
@@ -235,7 +248,6 @@ export function UploadScreen() {
             />
           </a>
         </h1>
-
         <p className="ll-upload-subtitle mt-3 text-sm sm:text-base">
           Analiza tus logs de forma rápida y visual
         </p>
@@ -265,10 +277,8 @@ export function UploadScreen() {
           {!file ? (
             <div className="ll-upload-content">
               <UploadIcon />
-
               <h2 className="ll-upload-title">Arrastra tu archivo de log aquí</h2>
               <p className="ll-upload-description">o selecciona un archivo</p>
-
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
@@ -277,10 +287,8 @@ export function UploadScreen() {
                 <FolderIcon />
                 <span>Seleccionar archivo</span>
               </button>
-
               <p className="ll-upload-formats">Archivos .log y .txt · Nginx Error Log</p>
               <p className="ll-upload-privacy">Tu archivo permanece en el navegador</p>
-
               {isDragging && (
                 <div className="ll-dropzone-message" aria-hidden="true">
                   Suelta el archivo para importarlo
@@ -292,43 +300,38 @@ export function UploadScreen() {
               <div className="ll-selected-icon">
                 <StepIcon type="file" />
               </div>
-
               <h2 className="ll-upload-title">Archivo seleccionado</h2>
-
               <div className="ll-file-card">
                 <div className="ll-file-card__icon">
                   <StepIcon type="file" />
                 </div>
-
                 <div className="ll-file-card__details">
                   <p className="ll-file-card__name">{file.name}</p>
                   <p className="ll-file-card__size">{formatFileSize(file.size)}</p>
                 </div>
-
                 <div className="ll-file-card__status" aria-label="Seleccionado">
                   ✓
                 </div>
               </div>
-
               <p className="ll-file-success">Archivo seleccionado correctamente</p>
-
               <div className="ll-file-actions">
+                <button type="button" onClick={() => onAnalyze(file)} className="ll-upload-button">
+                  <PlayIcon />
+                  <span>Analizar archivo</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
-                  className="ll-upload-button"
+                  className="ll-remove-button"
                 >
-                  <FolderIcon />
-                  <span>Cambiar archivo</span>
+                  Cambiar archivo
                 </button>
-
                 <button type="button" onClick={removeFile} className="ll-remove-button">
                   Quitar archivo
                 </button>
               </div>
-
               <p className="ll-upload-privacy">
-                El análisis estará disponible en la siguiente fase.
+                El análisis se realiza en tu navegador. No se sube ningún archivo.
               </p>
             </div>
           )}
@@ -350,7 +353,6 @@ export function UploadScreen() {
             <div className={`ll-upload-step__icon ll-upload-step__icon--${step.icon}`}>
               <StepIcon type={step.icon} />
             </div>
-
             <div className="ll-upload-step__content">
               <h3>{step.title}</h3>
               <p>{step.description}</p>
