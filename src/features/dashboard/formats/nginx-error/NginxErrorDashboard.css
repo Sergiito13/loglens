@@ -1,0 +1,141 @@
+/* ==========================================================
+   LOGLENS — NGINX ERROR DASHBOARD
+========================================================== */
+
+/* ==========================================================
+   TIMELINE
+========================================================== */
+
+.ll-nginx-chart {
+  width: 100%;
+  height: clamp(235px, 25vw, 315px);
+  min-width: 0;
+  margin-top: 16px;
+}
+
+.ll-nginx-chart-note {
+  margin-top: 10px;
+  color: #9daacc;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* ==========================================================
+   FREQUENT ERRORS
+========================================================== */
+
+.ll-nginx-frequent {
+  margin-top: 18px;
+}
+
+.ll-nginx-frequent-list {
+  display: grid;
+  gap: 0;
+  margin-top: 20px;
+}
+
+.ll-nginx-frequent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+
+  border-bottom: 1px solid rgba(119, 106, 181, 0.15);
+}
+
+.ll-nginx-frequent-item:last-child {
+  border-bottom: 0;
+}
+
+.ll-nginx-frequent-item code {
+  color: #e5def9;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.ll-nginx-frequent-item strong {
+  color: #ff8db9;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   RECORD DETAILS BUTTON
+========================================================== */
+
+.ll-nginx-detail-button {
+  padding: 7px 10px;
+
+  border: 1px solid rgba(174, 105, 245, 0.35);
+  border-radius: 7px;
+
+  background: rgba(139, 53, 245, 0.12);
+  color: #e7ceff;
+
+  cursor: pointer;
+}
+
+.ll-nginx-detail-button:hover {
+  background: rgba(139, 53, 245, 0.24);
+}
+
+.ll-nginx-detail-button:focus-visible {
+  outline: 2px solid #ee8fff;
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   RECORD DETAILS
+========================================================== */
+
+.ll-nginx-detail {
+  padding: 20px 23px;
+  border-top: 1px solid rgba(119, 106, 181, 0.24);
+  text-align: left;
+}
+
+.ll-nginx-detail-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ll-nginx-detail-heading h3 {
+  font-size: 15px;
+}
+
+.ll-nginx-detail p {
+  color: #b9c5e5;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.ll-nginx-detail pre {
+  overflow: auto;
+
+  padding: 13px;
+  border-radius: 9px;
+
+  background: #080d25;
+  color: #e7eafd;
+
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 600px) {
+  .ll-nginx-chart {
+    height: 260px;
+  }
+
+  .ll-nginx-detail {
+    padding: 16px;
+  }
+}
