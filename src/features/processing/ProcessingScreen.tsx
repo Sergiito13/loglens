@@ -23,14 +23,45 @@ const phases: ReadonlyArray<{ title: string; description: string; icon: IconName
 ];
 
 /**
- * Duración mínima de la PRESENTACIÓN visual, no del análisis real.
- * Cambia 7_000 por 10_000 si quieres una transición de 10 segundos.
+ * Hitos visuales asociados al progreso REAL de lectura.
+ * Son puntos del recorrido (0 %, 33 %, 66 %, 100 %),
+ * no tareas independientes ni temporizadores.
  */
-const MIN_PRESENTATION_MS = 7_000;
+const PHASE_MILESTONES = [0, 33, 66, 100] as const;
 
-/** Momento mínimo en que puede iluminarse cada fase. */
-const PHASE_TIMES_MS = [0, 850, 2_200, 3_600] as const;
-const RESULT_HOLD_MS = 900;
+type PhaseState = 'pending' | 'active' | 'done';
+
+/**
+ * Fill each connector using the same real progress as the lower bar.
+ * 0–33%: first connector; 33–66%: second; 66–100%: third.
+ * There are no independent animation timers.
+ */
+function getConnectorFill(index: number, percent: number): number {
+  const start = PHASE_MILESTONES[index] ?? 0;
+  const end = PHASE_MILESTONES[index + 1] ?? 100;
+  if (end <= start) return 0;
+  return Math.max(0, Math.min(100, ((percent - start) / (end - start)) * 100));
+}
+
+function getPhaseState(
+  index: number,
+  stage: LogProcessingProgress['stage'],
+  percent: number,
+  completed: boolean,
+): PhaseState {
+  if (completed) return 'done';
+  if (stage === 'detecting') return index === 0 ? 'active' : 'pending';
+
+  const currentIndex = percent >= PHASE_MILESTONES[2]
+    ? 2
+    : percent >= PHASE_MILESTONES[1]
+      ? 1
+      : 0;
+
+  if (index < currentIndex) return 'done';
+  return index === currentIndex ? 'active' : 'pending';
+}
+
 const numberFormat = new Intl.NumberFormat('es-ES');
 
 function elapsedLabel(milliseconds: number): string {
@@ -100,7 +131,6 @@ export function ProcessingScreen({ file, onBack, onComplete }: ProcessingScreenP
   const onCompleteRef = useRef(onComplete);
 
   const [progress, setProgress] = useState<LogProcessingProgress>(() => initialProgress(file.size));
-  const [visiblePhase, setVisiblePhase] = useState(0);
   const [result, setResult] = useState<LogProcessingResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [durationMs, setDurationMs] = useState(0);
@@ -111,68 +141,25 @@ export function ProcessingScreen({ file, onBack, onComplete }: ProcessingScreenP
 
   useEffect(() => {
     let active = true;
-    let realTargetPhase = 0;
-    let finishedAt: number | null = null;
-    let processingDurationMs = 0;
-    let completed: LogProcessingResult | null = null;
-    let failed = false;
-    let navigated = false;
-
     const startedAt = performance.now();
     const controller = new AbortController();
     abortRef.current = controller;
 
-    const tick = () => {
-      if (!active || failed) return;
-
-      const now = performance.now();
-      const elapsed = now - startedAt;
-      setDurationMs(completed ? processingDurationMs : elapsed);
-
-      // Los hitos reflejan el motor real, pero se revelan con tiempo
-      // suficiente para ver cada icono. No altera los bytes ni el % real.
-      let timeLimitedPhase = 0;
-      for (let i = 1; i < PHASE_TIMES_MS.length; i++) {
-        if (elapsed >= PHASE_TIMES_MS[i]) timeLimitedPhase = i;
-      }
-
-      const shownPhase = Math.min(realTargetPhase, timeLimitedPhase);
-      setVisiblePhase(shownPhase);
-
-      if (
-        completed &&
-        finishedAt !== null &&
-        shownPhase === phases.length - 1 &&
-        elapsed >= MIN_PRESENTATION_MS &&
-        now - finishedAt >= RESULT_HOLD_MS &&
-        !navigated
-      ) {
-        navigated = true;
-        onCompleteRef.current(completed);
-      }
-    };
-
-    const timer = window.setInterval(tick, 75);
-    tick();
+    const clockTimer = window.setInterval(() => {
+      if (active) setDurationMs(performance.now() - startedAt);
+    }, 100);
 
     void processLogFileInWorker(file, {
       signal: controller.signal,
-      onProgress: (update) => {
-        if (!active) return;
-        setProgress(update);
-        if (update.stage === 'parsing') {
-          realTargetPhase = Math.max(realTargetPhase, update.percent >= 70 ? 2 : 1);
-        }
+      onProgress(update) {
+        if (active && update.stage !== 'completed') setProgress(update);
       },
     })
       .then((processed) => {
         if (!active) return;
-        finishedAt = performance.now();
-        processingDurationMs = finishedAt - startedAt;
-        completed = processed;
-        realTargetPhase = 3;
+        window.clearInterval(clockTimer);
+        setDurationMs(performance.now() - startedAt);
         setResult(processed);
-        setDurationMs(processingDurationMs);
         setProgress({
           stage: 'completed',
           bytesRead: file.size,
@@ -182,19 +169,23 @@ export function ProcessingScreen({ file, onBack, onComplete }: ProcessingScreenP
           parsedLines: processed.parsedLines,
           invalidLines: processed.invalidLines,
         });
+
+        // Sin espera artificial: la vista de progreso solo se muestra
+        // cuando el archivo tarda mas de 300 ms en procesarse.
+        // El dashboard recibe los resultados en cuanto estan listos.
+        onCompleteRef.current(processed);
       })
       .catch((caught: unknown) => {
         if (!active) return;
         if (caught instanceof Error && caught.name === 'AbortError') return;
-        failed = true;
-        window.clearInterval(timer);
+        window.clearInterval(clockTimer);
         setDurationMs(performance.now() - startedAt);
         setError(caught instanceof Error ? caught.message : 'No se pudo procesar el archivo.');
       });
 
     return () => {
       active = false;
-      window.clearInterval(timer);
+      window.clearInterval(clockTimer);
       controller.abort();
       if (abortRef.current === controller) abortRef.current = null;
     };
@@ -202,7 +193,8 @@ export function ProcessingScreen({ file, onBack, onComplete }: ProcessingScreenP
 
   const finished = result !== null;
   const failed = error !== null;
-  const percent = Math.max(0, Math.min(100, progress.percent));
+  // El 100 % solo se muestra cuando el Worker ha entregado el resultado.
+  const percent = finished ? 100 : Math.max(0, Math.min(99, progress.percent));
   const detectedFormat = result?.detection.name ?? result?.format ?? 'Análisis local';
 
   const title = failed
@@ -214,7 +206,7 @@ export function ProcessingScreen({ file, onBack, onComplete }: ProcessingScreenP
   const subtitle = failed
     ? 'El archivo no se ha podido interpretar.'
     : finished
-      ? 'Procesamiento terminado. Preparando el dashboard...'
+      ? 'Todos los registros procesados. Abriendo el dashboard...'
       : progress.stage === 'detecting'
         ? 'Identificando el formato del archivo.'
         : 'Leyendo y clasificando los registros en tu navegador.';
@@ -252,14 +244,25 @@ export function ProcessingScreen({ file, onBack, onComplete }: ProcessingScreenP
 
         {!failed && (
           <>
-            <div className="ll-p-phases" aria-label="Fases del análisis">
+            <div className="ll-p-phases" aria-label="Hitos del análisis">
+              {/* Three independent visual spans, each ending BEFORE the circles. */}
+              <div className="ll-p-phase-connectors" aria-hidden="true">
+                {[0, 1, 2].map((index) => (
+                  <span key={index} className={`ll-p-connector ll-p-connector--${index + 1}`}>
+                    <span
+                      className="ll-p-connector-fill"
+                      style={{ width: `${getConnectorFill(index, percent)}%` }}
+                    />
+                  </span>
+                ))}
+              </div>
               {phases.map((phase, index) => {
-                const phaseState = index < visiblePhase ? 'done' : index === visiblePhase ? 'active' : 'pending';
+                const phaseState = getPhaseState(index, progress.stage, percent, finished);
                 return (
                   <div
                     className={`ll-p-phase ll-p-phase--${phaseState}`}
                     key={phase.title}
-                    aria-current={index === visiblePhase ? 'step' : undefined}
+                    aria-current={phaseState === 'active' ? 'step' : undefined}
                   >
                     <span className="ll-p-phase-icon"><Icon name={phase.icon} /></span>
                     <strong>{phase.title}</strong>

@@ -1,6 +1,10 @@
 /* ==========================================================
    LOGLENS — COMPACT PROCESSING SCREEN
-   Full width; no enclosing panel. Uses real Worker progress.
+   Full width, synchronized progress and separated connectors
+========================================================== */
+
+/* ==========================================================
+   PAGE
 ========================================================== */
 
 .ll-p-page {
@@ -44,6 +48,10 @@
   font-size: 14px;
 }
 
+/* ==========================================================
+   MAIN LAYOUT
+========================================================== */
+
 .ll-p-layout {
   display: flex;
   flex-direction: column;
@@ -53,7 +61,10 @@
   text-align: center;
 }
 
-/* Selected file: no card around the analysis */
+/* ==========================================================
+   SELECTED FILE
+========================================================== */
+
 .ll-p-file {
   display: flex;
   align-items: center;
@@ -110,7 +121,10 @@
   background: rgba(245, 26, 131, 0.13);
 }
 
-/* Heading */
+/* ==========================================================
+   HEADING
+========================================================== */
+
 .ll-p-heading {
   margin-top: clamp(23px, 4vh, 37px);
 }
@@ -129,17 +143,127 @@
   font-size: clamp(13px, 1.25vw, 15px);
 }
 
-/* Four visually connected phases */
+/* ==========================================================
+   PROCESSING PHASES
+========================================================== */
+
 .ll-p-phases {
+  --ll-icon-size: 49px;
+  --ll-icon-radius: 24.5px;
+  --ll-connector-gap: 10px;
+
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 0;
   width: 100%;
   margin-top: clamp(28px, 4.6vh, 43px);
 }
 
+/* ==========================================================
+   CONNECTOR CONTAINER
+========================================================== */
+
+.ll-p-phase-connectors {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================
+   THREE CONNECTORS
+========================================================== */
+
+.ll-p-connector {
+  position: absolute;
+
+  top: calc(var(--ll-icon-radius) - 1.5px);
+
+  width: calc(
+    25% - var(--ll-icon-size) -
+    var(--ll-connector-gap) -
+    var(--ll-connector-gap)
+  );
+
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(121, 111, 189, 0.32);
+}
+
+/* First connector */
+.ll-p-connector--1 {
+  left: calc(
+    12.5% +
+    var(--ll-icon-radius) +
+    var(--ll-connector-gap)
+  );
+}
+
+/* Second connector */
+.ll-p-connector--2 {
+  left: calc(
+    37.5% +
+    var(--ll-icon-radius) +
+    var(--ll-connector-gap)
+  );
+}
+
+/* Third connector */
+.ll-p-connector--3 {
+  left: calc(
+    62.5% +
+    var(--ll-icon-radius) +
+    var(--ll-connector-gap)
+  );
+}
+
+/* ==========================================================
+   CONNECTOR FILL
+========================================================== */
+
+.ll-p-connector-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 120ms linear;
+}
+
+/* Each connector continues the LogLens gradient. */
+
+.ll-p-connector--1 .ll-p-connector-fill {
+  background: linear-gradient(
+    90deg,
+    #8b35f5,
+    #cb2de3
+  );
+}
+
+.ll-p-connector--2 .ll-p-connector-fill {
+  background: linear-gradient(
+    90deg,
+    #cb2de3,
+    #f51a83
+  );
+}
+
+.ll-p-connector--3 .ll-p-connector-fill {
+  background: linear-gradient(
+    90deg,
+    #f51a83,
+    #ff914d
+  );
+}
+
+/* ==========================================================
+   INDIVIDUAL PHASE
+========================================================== */
+
 .ll-p-phase {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -147,6 +271,10 @@
   min-width: 0;
   padding: 0 6px;
 }
+
+/* ==========================================================
+   PHASE ICONS
+========================================================== */
 
 .ll-p-phase-icon {
   position: relative;
@@ -157,53 +285,46 @@
   height: 49px;
   border: 2px solid rgba(136, 125, 209, 0.35);
   border-radius: 50%;
-  background: rgba(10, 16, 43, 0.86);
+  background: #0a102b;
   color: #777fa8;
-  transition: border-color 450ms, color 450ms, background 450ms, box-shadow 450ms;
+
+  transition:
+    border-color 120ms,
+    color 120ms,
+    background 120ms,
+    box-shadow 120ms;
 }
 
-.ll-p-phase:not(:last-child)::after,
-.ll-p-phase:not(:last-child)::before {
-  content: '';
-  position: absolute;
-  top: 24px;
-  left: calc(50% + 34px);
-  right: calc(-50% + 34px);
-  height: 3px;
-  border-radius: 99px;
-}
-
-.ll-p-phase:not(:last-child)::after {
-  background: rgba(121, 111, 189, 0.28);
-}
-
-.ll-p-phase:not(:last-child)::before {
-  z-index: 1;
-  background: linear-gradient(90deg, #8b35f5, #f51a83, #ff914d);
-  box-shadow: 0 0 14px rgba(245, 26, 131, 0.25);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 850ms ease-in-out;
-}
-
-.ll-p-phase--done:not(:last-child)::before {
-  transform: scaleX(1);
-}
+/* ==========================================================
+   COMPLETED PHASE
+========================================================== */
 
 .ll-p-phase--done .ll-p-phase-icon {
   border-color: #af4cff;
-  background: rgba(139, 53, 245, 0.19);
+  background: #23173e;
   color: #dca6ff;
   box-shadow: 0 0 15px rgba(139, 53, 245, 0.23);
 }
 
+/* ==========================================================
+   ACTIVE PHASE
+========================================================== */
+
 .ll-p-phase--active .ll-p-phase-icon {
   border-color: #f51a83;
-  background: rgba(245, 26, 131, 0.14);
+  background: #28132f;
   color: #ff83cc;
-  box-shadow: 0 0 0 5px rgba(245, 26, 131, 0.07), 0 0 23px rgba(245, 26, 131, 0.24);
+
+  box-shadow:
+    0 0 0 5px rgba(245, 26, 131, 0.07),
+    0 0 23px rgba(245, 26, 131, 0.24);
+
   animation: ll-p-phase-pulse 1.6s ease-in-out infinite;
 }
+
+/* ==========================================================
+   PHASE TEXT
+========================================================== */
 
 .ll-p-phase strong {
   margin-top: 3px;
@@ -222,7 +343,21 @@
   color: #9ea8cb;
 }
 
-/* Real byte progress */
+/* ==========================================================
+   FINAL PHASE
+========================================================== */
+
+.ll-p-phase--done:last-child .ll-p-phase-icon {
+  border-color: #f51a83;
+  background: #28132f;
+  color: #ff80c7;
+  box-shadow: 0 0 17px rgba(245, 26, 131, 0.25);
+}
+
+/* ==========================================================
+   MAIN PROGRESS BAR
+========================================================== */
+
 .ll-p-progress {
   display: flex;
   align-items: center;
@@ -244,9 +379,18 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #8426fa, #bd2ded 27%, #f51a83 68%, #ff914d);
+
+  background: linear-gradient(
+    90deg,
+    #8426fa,
+    #bd2ded 27%,
+    #f51a83 68%,
+    #ff914d
+  );
+
   box-shadow: 0 0 18px rgba(245, 26, 131, 0.34);
-  transition: width 180ms ease-out;
+
+  transition: width 120ms linear;
 }
 
 .ll-p-progress strong {
@@ -257,6 +401,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ==========================================================
+   PROGRESS DESCRIPTION
+========================================================== */
+
 .ll-p-progress-description {
   margin: 9px 0 0;
   color: #aab8da;
@@ -264,7 +412,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Statistics without bulky cards */
+/* ==========================================================
+   METRICS
+========================================================== */
+
 .ll-p-metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -283,6 +434,10 @@
   text-align: left;
 }
 
+/* ==========================================================
+   METRIC ICONS
+========================================================== */
+
 .ll-p-metric-icon {
   display: grid;
   flex-shrink: 0;
@@ -294,9 +449,25 @@
   background: rgba(123, 46, 224, 0.13);
 }
 
-.ll-p-metric-icon--violet { color: #b85aff; }
-.ll-p-metric-icon--pink { color: #ff439f; border-color: rgba(245, 26, 131, 0.22); background: rgba(245, 26, 131, 0.09); }
-.ll-p-metric-icon--orange { color: #ffb64a; border-color: rgba(255, 145, 77, 0.22); background: rgba(255, 145, 77, 0.08); }
+.ll-p-metric-icon--violet {
+  color: #b85aff;
+}
+
+.ll-p-metric-icon--pink {
+  color: #ff439f;
+  border-color: rgba(245, 26, 131, 0.22);
+  background: rgba(245, 26, 131, 0.09);
+}
+
+.ll-p-metric-icon--orange {
+  color: #ffb64a;
+  border-color: rgba(255, 145, 77, 0.22);
+  background: rgba(255, 145, 77, 0.08);
+}
+
+/* ==========================================================
+   METRIC VALUES
+========================================================== */
 
 .ll-p-metric > span:last-child {
   display: flex;
@@ -315,7 +486,10 @@
   font-size: 12px;
 }
 
-/* Action */
+/* ==========================================================
+   ACTIONS
+========================================================== */
+
 .ll-p-actions {
   min-height: 40px;
   margin-top: clamp(19px, 3.4vh, 29px);
@@ -346,9 +520,20 @@
 
 .ll-p-action--primary {
   border-color: transparent;
-  background: linear-gradient(100deg, #7924f3, #f51a83 65%, #ff914d);
+
+  background: linear-gradient(
+    100deg,
+    #7924f3,
+    #f51a83 65%,
+    #ff914d
+  );
+
   color: white;
 }
+
+/* ==========================================================
+   ERROR
+========================================================== */
 
 .ll-p-error {
   max-width: 700px;
@@ -361,61 +546,181 @@
   font-size: 13px;
 }
 
+/* ==========================================================
+   ACCESSIBILITY
+========================================================== */
+
 .ll-p-close:focus-visible,
 .ll-p-action:focus-visible {
   outline: 2px solid #f7a4ff;
   outline-offset: 3px;
 }
 
+/* ==========================================================
+   ANIMATION
+========================================================== */
+
 @keyframes ll-p-phase-pulse {
-  0%, 100% { box-shadow: 0 0 0 5px rgba(245, 26, 131, 0.05), 0 0 18px rgba(245, 26, 131, 0.16); }
-  50% { box-shadow: 0 0 0 8px rgba(245, 26, 131, 0.08), 0 0 26px rgba(245, 26, 131, 0.27); }
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 5px rgba(245, 26, 131, 0.05),
+      0 0 18px rgba(245, 26, 131, 0.16);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(245, 26, 131, 0.08),
+      0 0 26px rgba(245, 26, 131, 0.27);
+  }
 }
+
+/* ==========================================================
+   COMPACT DESKTOP
+========================================================== */
 
 @media (max-height: 780px) and (min-width: 781px) {
-  .ll-p-page { padding-top: 12px; padding-bottom: 12px; }
-  .ll-p-header img { height: 46px; }
-  .ll-p-layout { margin-top: 13px; }
-  .ll-p-heading { margin-top: 17px; }
-  .ll-p-phases { margin-top: 21px; }
-  .ll-p-progress { margin-top: 21px; }
-  .ll-p-metrics { margin-top: 19px; }
-  .ll-p-actions { margin-top: 12px; }
+  .ll-p-page {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .ll-p-header img {
+    height: 46px;
+  }
+
+  .ll-p-layout {
+    margin-top: 13px;
+  }
+
+  .ll-p-heading {
+    margin-top: 17px;
+  }
+
+  .ll-p-phases {
+    margin-top: 21px;
+  }
+
+  .ll-p-progress {
+    margin-top: 21px;
+  }
+
+  .ll-p-metrics {
+    margin-top: 19px;
+  }
+
+  .ll-p-actions {
+    margin-top: 12px;
+  }
 }
+
+/* ==========================================================
+   TABLET
+========================================================== */
 
 @media (max-width: 780px) {
-  .ll-p-page { padding: 19px 16px 30px; }
-  .ll-p-phases { gap: 2px; }
-  .ll-p-phase { padding: 0 2px; }
-  .ll-p-phase:not(:last-child)::after,
-  .ll-p-phase:not(:last-child)::before {
-    left: calc(50% + 27px);
-    right: calc(-50% + 27px);
+  .ll-p-page {
+    padding: 19px 16px 30px;
   }
-  .ll-p-phase-icon { width: 43px; height: 43px; }
-  .ll-p-phase:not(:last-child)::after,
-  .ll-p-phase:not(:last-child)::before { top: 21px; }
-  .ll-p-metrics { gap: 12px; }
-  .ll-p-metric { gap: 8px; }
-  .ll-p-metric-icon { width: 43px; height: 43px; }
-  .ll-p-metric strong { font-size: 20px; }
+
+  .ll-p-phases {
+    --ll-icon-size: 43px;
+    --ll-icon-radius: 21.5px;
+    --ll-connector-gap: 8px;
+  }
+
+  .ll-p-phase {
+    padding: 0 2px;
+  }
+
+  .ll-p-phase-icon {
+    width: 43px;
+    height: 43px;
+  }
+
+  .ll-p-metrics {
+    gap: 12px;
+  }
+
+  .ll-p-metric {
+    gap: 8px;
+  }
+
+  .ll-p-metric-icon {
+    width: 43px;
+    height: 43px;
+  }
+
+  .ll-p-metric strong {
+    font-size: 20px;
+  }
 }
+
+/* ==========================================================
+   MOBILE
+========================================================== */
 
 @media (max-width: 560px) {
-  .ll-p-heading { margin-top: 25px; }
-  .ll-p-phase strong { font-size: 10px; }
-  .ll-p-phase small { display: none; }
-  .ll-p-metrics { grid-template-columns: 1fr; max-width: 240px; gap: 14px; }
-  .ll-p-metric { justify-content: flex-start; }
-  .ll-p-progress { gap: 8px; }
-  .ll-p-progress strong { min-width: 53px; font-size: 19px; }
-  .ll-p-phase-icon { width: 39px; height: 39px; }
-  .ll-p-phase:not(:last-child)::after,
-  .ll-p-phase:not(:last-child)::before { top: 19px; left: calc(50% + 24px); right: calc(-50% + 24px); height: 2px; }
+  .ll-p-heading {
+    margin-top: 25px;
+  }
+
+  .ll-p-phase strong {
+    font-size: 10px;
+  }
+
+  .ll-p-phase small {
+    display: none;
+  }
+
+  .ll-p-metrics {
+    grid-template-columns: 1fr;
+    max-width: 240px;
+    gap: 14px;
+  }
+
+  .ll-p-metric {
+    justify-content: flex-start;
+  }
+
+  .ll-p-progress {
+    gap: 8px;
+  }
+
+  .ll-p-progress strong {
+    min-width: 53px;
+    font-size: 19px;
+  }
+
+  .ll-p-phase-icon {
+    width: 39px;
+    height: 39px;
+  }
+
+  .ll-p-phases {
+    --ll-icon-size: 39px;
+    --ll-icon-radius: 19.5px;
+    --ll-connector-gap: 6px;
+  }
+
+  .ll-p-connector {
+    height: 2px;
+    top: calc(var(--ll-icon-radius) - 1px);
+  }
 }
 
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
+
 @media (prefers-reduced-motion: reduce) {
-  .ll-p-phase-icon { animation: none !important; transition: none; }
-  .ll-p-phase:not(:last-child)::before,
-  .ll-p-progress-fill { transition: none; }
+  .ll-p-phase-icon {
+    animation: none !important;
+    transition: none;
+  }
+
+  .ll-p-connector-fill,
+  .ll-p-progress-fill {
+    transition: none;
+  }
 }
