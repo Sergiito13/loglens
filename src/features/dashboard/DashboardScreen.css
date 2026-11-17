@@ -3,9 +3,7 @@
    Responsive · Dark UI · Full width
 ========================================================== */
 
-/* ==========================================================
-   PAGE / GLOBAL DASHBOARD LAYOUT
-========================================================== */
+/* PAGE / GLOBAL DASHBOARD LAYOUT */
 
 .ll-dash-page,
 .ll-dash-page *,
@@ -17,16 +15,12 @@
 .ll-dash-page {
   position: relative;
   isolation: isolate;
-
   width: 100%;
   max-width: 100%;
   min-height: 100svh;
-
   margin: 0;
   padding: 24px clamp(16px, 3vw, 48px) 64px;
-
   overflow-x: clip;
-
   background: #040925;
   color: #f6f7ff;
 }
@@ -34,50 +28,38 @@
 .ll-dash-container {
   position: relative;
   z-index: 2;
-
   width: 100%;
   max-width: 1540px;
   min-width: 0;
-
   margin: 0 auto;
 }
 
-/* ==========================================================
-   HEADER
-========================================================== */
+/* HEADER */
 
 .ll-dash-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   flex-wrap: wrap;
   gap: 16px;
-
   width: 100%;
   min-width: 0;
-
   padding: 4px 0 22px;
-
   border-bottom: 1px solid rgba(159, 106, 235, 0.17);
 }
 
 .ll-dash-identity {
   display: flex;
   align-items: center;
-
   flex: 0 1 auto;
   gap: 16px;
-
   min-width: 0;
 }
 
 .ll-dash-identity img {
   display: block;
-
   width: auto;
   height: 44px;
-
   max-width: min(190px, 100%);
   object-fit: contain;
 }
@@ -87,19 +69,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   padding: 7px 11px;
-
   border: 1px solid rgba(171, 117, 241, 0.24);
   border-radius: 999px;
-
   background: rgba(151, 72, 213, 0.07);
-
   color: #d2b9f6;
-
   font-size: 11px;
   font-weight: 650;
-
   white-space: nowrap;
 }
 
@@ -107,27 +83,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   min-height: 42px;
   padding: 10px 17px;
-
   border: 1px solid rgba(174, 105, 245, 0.42);
   border-radius: 10px;
-
   background: rgba(139, 53, 245, 0.12);
-
   color: #f7ebff;
-
   font-family: inherit;
   font-size: 13px;
   font-weight: 650;
-
   white-space: nowrap;
-
   cursor: pointer;
-
   transition:
     background 150ms ease,
     border-color 150ms ease;
@@ -138,20 +105,15 @@
   border-color: rgba(174, 105, 245, 0.7);
 }
 
-/* ==========================================================
-   DASHBOARD INTRO / FILE INFORMATION
-========================================================== */
+/* DASHBOARD INTRO / FILE INFORMATION */
 
 .ll-dash-intro {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-
   gap: 24px;
-
   width: 100%;
   min-width: 0;
-
   padding: 28px 0 24px;
 }
 
@@ -162,9 +124,7 @@
 
 .ll-dash-eyebrow {
   margin: 0;
-
   color: #e052b7;
-
   font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -172,21 +132,16 @@
 
 .ll-dash-intro h1 {
   margin: 8px 0 9px;
-
   font-size: clamp(26px, 3vw, 40px);
   font-weight: 720;
-
   line-height: 1.15;
   letter-spacing: -0.035em;
-
   overflow-wrap: anywhere;
 }
 
 .ll-dash-intro p:not(.ll-dash-eyebrow) {
   margin: 0;
-
   color: #aebad8;
-
   font-size: 13px;
   line-height: 1.6;
 }
@@ -195,40 +150,28 @@
   display: flex;
   flex: 0 1 420px;
   flex-direction: column;
-
   align-items: flex-end;
-
   gap: 5px;
-
   min-width: 0;
   max-width: 45%;
-
   text-align: right;
 }
 
 .ll-dash-file strong {
   display: block;
-
   max-width: 100%;
-
   color: #f6f7ff;
-
   font-size: 14px;
   font-weight: 650;
-
   overflow-wrap: anywhere;
 }
 
 .ll-dash-file span {
   display: block;
-
   max-width: 100%;
-
   color: #aebad8;
-
   font-size: 12px;
   line-height: 1.5;
-
   overflow-wrap: anywhere;
 }
 
@@ -238,81 +181,150 @@
 }
 
 /* ==========================================================
-   METRICS GRID
+   METRIC CARDS — LEFT ICON / CLEAN TYPOGRAPHY
 ========================================================== */
 
 .ll-dash-metrics {
   display: grid;
-
   grid-template-columns: repeat(4, minmax(0, 1fr));
-
   gap: 14px;
-
   width: 100%;
   min-width: 0;
 }
 
-.ll-dash-metrics article {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.ll-dash-metric {
+  --metric-accent: #b45cff;
 
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
 
   min-width: 0;
-  min-height: 125px;
+  min-height: 116px;
 
-  padding: 19px 20px;
+  padding: 18px 20px;
 
   border: 1px solid rgba(153, 106, 217, 0.25);
-  border-radius: 13px;
+  border-radius: 14px;
 
-  background: rgba(12, 18, 49, 0.82);
+  background: rgba(12, 18, 49, 0.86);
 
-  transition: border-color 150ms ease;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
 }
 
-.ll-dash-metrics article:nth-child(2) {
-  border-top-color: rgba(245, 26, 131, 0.62);
+/* METRIC ACCENT COLORS */
+
+.ll-dash-metric--violet {
+  --metric-accent: #b45cff;
 }
 
-.ll-dash-metrics article:nth-child(3) {
-  border-top-color: rgba(255, 145, 77, 0.62);
+.ll-dash-metric--pink {
+  --metric-accent: #f51a83;
 }
 
-.ll-dash-metrics article:nth-child(4) {
-  border-top-color: rgba(178, 75, 255, 0.62);
+.ll-dash-metric--orange {
+  --metric-accent: #ff914d;
 }
 
-.ll-dash-metrics article span {
+.ll-dash-metric--purple {
+  --metric-accent: #c15bff;
+}
+
+/* METRIC ICON */
+
+.ll-dash-metric__icon {
+  display: grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  color: var(--metric-accent);
+}
+
+.ll-dash-metric__icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+/* METRIC CONTENT */
+
+.ll-dash-metric__content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  min-width: 0;
+}
+
+/* METRIC LABEL */
+
+.ll-dash-metric__label {
   color: #aab7da;
 
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.065em;
+  font-size: 11px;
+  font-weight: 700;
 
+  letter-spacing: 0.035em;
   line-height: 1.4;
+
+  overflow-wrap: anywhere;
 }
 
-.ll-dash-metrics article strong {
+/* METRIC VALUE */
+
+.ll-dash-metric__value {
   display: block;
 
-  max-width: 100%;
+  min-width: 0;
 
-  font-size: clamp(22px, 2.3vw, 35px);
+  color: #f6f7ff;
+
+  font-size: clamp(27px, 2.3vw, 36px);
   font-weight: 720;
 
   line-height: 1.1;
   letter-spacing: -0.035em;
 
   font-variant-numeric: tabular-nums;
+
+  overflow-wrap: anywhere;
 }
 
-.ll-dash-metrics article small {
-  color: #8292bf;
+/* METRIC DETAIL */
 
-  font-size: 11px;
-  line-height: 1.4;
+.ll-dash-metric__detail {
+  color: #a0adce;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+/* METRIC PERCENTAGE */
+
+.ll-dash-metric__percentage {
+  color: color-mix(in srgb, var(--metric-accent) 72%, white);
+
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  white-space: nowrap;
+}
+
+/* METRIC HOVER */
+
+@media (hover: hover) and (pointer: fine) {
+  .ll-dash-metric:hover {
+    border-color: rgba(153, 106, 217, 0.4);
+    background: rgba(15, 21, 55, 0.94);
+  }
 }
 
 /* ==========================================================
@@ -414,6 +426,7 @@
   gap: 7px;
 
   color: #c4cce5;
+
   font-size: 11px;
 }
 
@@ -455,6 +468,7 @@
   padding: 0 2%;
 
   color: #8b9cc4;
+
   font-size: 11px;
 }
 
@@ -504,6 +518,7 @@
   min-width: 0;
 
   color: #d7dcf0;
+
   font-size: 12px;
 }
 
@@ -545,6 +560,7 @@
   margin-top: 5px;
 
   color: #8495bb;
+
   font-size: 10px;
 }
 
@@ -701,6 +717,7 @@
 
 .ll-dash-nowrap {
   white-space: nowrap;
+
   font-variant-numeric: tabular-nums;
 }
 
@@ -729,6 +746,7 @@
   background: rgba(190, 109, 230, 0.12);
 
   color: #ddb3ff;
+
   font-size: 11px;
 }
 
@@ -764,6 +782,7 @@
   padding: 24px;
 
   color: #aab7d8;
+
   font-size: 12px;
 
   text-align: center;
@@ -781,6 +800,7 @@
   background: transparent;
 
   color: #d8bdfc;
+
   font-size: 12px;
 
   cursor: pointer;
@@ -808,10 +828,6 @@
 
   .ll-dash-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ll-dash-metrics article strong {
-    font-size: clamp(25px, 3vw, 34px);
   }
 }
 
@@ -856,18 +872,30 @@
     text-align: left;
   }
 
+  /* METRICS */
+
   .ll-dash-metrics {
     gap: 11px;
   }
 
-  .ll-dash-metrics article {
+  .ll-dash-metric {
     min-height: 112px;
-    padding: 17px;
+
+    padding: 16px;
+    gap: 12px;
   }
+
+  .ll-dash-metric__value {
+    font-size: clamp(26px, 4vw, 34px);
+  }
+
+  /* PANELS */
 
   .ll-dash-panel {
     padding: 18px;
   }
+
+  /* TABLE */
 
   .ll-dash-table-panel {
     padding: 0;
@@ -913,8 +941,8 @@
 
   .ll-dash-header {
     flex-wrap: nowrap;
-
     align-items: center;
+
     gap: 8px;
 
     padding: 2px 0 15px;
@@ -924,6 +952,7 @@
     flex: 1 1 auto;
 
     gap: 0;
+
     min-width: 0;
   }
 
@@ -993,38 +1022,55 @@
     gap: 9px;
   }
 
-  .ll-dash-metrics article {
-    min-width: 0;
-    min-height: 104px;
+  .ll-dash-metric {
+    grid-template-columns: 23px minmax(0, 1fr);
+
+    min-height: 112px;
 
     gap: 8px;
 
-    padding: 13px 12px;
+    padding: 12px;
 
-    border-radius: 11px;
+    border-radius: 12px;
   }
 
-  .ll-dash-metrics article span {
-    font-size: 9px;
-    letter-spacing: 0.025em;
+  .ll-dash-metric__icon {
+    width: 23px;
+    height: 23px;
   }
 
-  .ll-dash-metrics article strong {
-    font-size: clamp(20px, 5.6vw, 27px);
-    letter-spacing: -0.04em;
+  .ll-dash-metric__icon svg {
+    width: 22px;
+    height: 22px;
   }
 
-  .ll-dash-metrics article small {
+  .ll-dash-metric__content {
+    gap: 6px;
+  }
+
+  .ll-dash-metric__label {
     font-size: 10px;
+    letter-spacing: 0;
+  }
+
+  .ll-dash-metric__value {
+    font-size: clamp(19px, 5.1vw, 28px);
+  }
+
+  .ll-dash-metric__detail {
+    font-size: 11px;
+    line-height: 1.4;
   }
 
   /* CHARTS */
 
   .ll-dash-visuals {
     display: grid;
+
     grid-template-columns: minmax(0, 1fr);
 
     gap: 12px;
+
     margin-top: 12px;
   }
 
@@ -1063,6 +1109,7 @@
 
   .ll-dash-level-list {
     gap: 14px;
+
     margin-top: 19px;
   }
 
@@ -1084,6 +1131,7 @@
 
   .ll-dash-controls {
     display: grid;
+
     grid-template-columns: minmax(0, 1fr);
 
     gap: 9px;
@@ -1100,6 +1148,7 @@
 
   .ll-dash-table-scroller {
     width: 100%;
+
     overflow-x: auto;
   }
 
@@ -1135,15 +1184,26 @@
 
   .ll-dash-new {
     padding: 7px 8px;
+
     font-size: 9px;
   }
 
-  .ll-dash-metrics article {
-    padding: 12px 10px;
+  .ll-dash-metric {
+    grid-template-columns: 20px minmax(0, 1fr);
+
+    padding: 10px;
+
+    gap: 6px;
   }
 
-  .ll-dash-metrics article strong {
-    font-size: 20px;
+  .ll-dash-metric__value {
+    font-size: 18px;
+  }
+
+  .ll-dash-metric__icon,
+  .ll-dash-metric__icon svg {
+    width: 20px;
+    height: 20px;
   }
 
   .ll-dash-panel {
