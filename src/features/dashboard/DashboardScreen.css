@@ -1,9 +1,9 @@
 /* ==========================================================
    LOGLENS — DASHBOARD SHARED STYLES
-   Responsive · Dark UI · Full width
+   Full width · Responsive · Dark UI
 ========================================================== */
 
-/* PAGE / GLOBAL DASHBOARD LAYOUT */
+/* PAGE */
 
 .ll-dash-page,
 .ll-dash-page *,
@@ -19,7 +19,7 @@
   max-width: 100%;
   min-height: 100svh;
   margin: 0;
-  padding: 24px clamp(16px, 3vw, 48px) 64px;
+  padding: 24px clamp(12px, 1.4vw, 28px) 64px;
   overflow-x: clip;
   background: #040925;
   color: #f6f7ff;
@@ -29,9 +29,9 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1540px;
+  max-width: none;
   min-width: 0;
-  margin: 0 auto;
+  margin: 0;
 }
 
 /* HEADER */
@@ -105,7 +105,7 @@
   border-color: rgba(174, 105, 245, 0.7);
 }
 
-/* DASHBOARD INTRO / FILE INFORMATION */
+/* INTRO */
 
 .ll-dash-intro {
   display: flex;
@@ -180,9 +180,7 @@
   color: #8149bb;
 }
 
-/* ==========================================================
-   METRIC CARDS — LEFT ICON / CLEAN TYPOGRAPHY
-========================================================== */
+/* METRICS */
 
 .ll-dash-metrics {
   display: grid;
@@ -199,23 +197,16 @@
   grid-template-columns: 36px minmax(0, 1fr);
   align-items: start;
   gap: 14px;
-
   min-width: 0;
   min-height: 116px;
-
   padding: 18px 20px;
-
   border: 1px solid rgba(153, 106, 217, 0.25);
   border-radius: 14px;
-
   background: rgba(12, 18, 49, 0.86);
-
   transition:
     border-color 160ms ease,
     background-color 160ms ease;
 }
-
-/* METRIC ACCENT COLORS */
 
 .ll-dash-metric--violet {
   --metric-accent: #b45cff;
@@ -233,15 +224,11 @@
   --metric-accent: #c15bff;
 }
 
-/* METRIC ICON */
-
 .ll-dash-metric__icon {
   display: grid;
   place-items: center;
-
   width: 36px;
   height: 36px;
-
   color: var(--metric-accent);
 }
 
@@ -251,74 +238,47 @@
   height: 28px;
 }
 
-/* METRIC CONTENT */
-
 .ll-dash-metric__content {
   display: flex;
   flex-direction: column;
-
   gap: 7px;
-
   min-width: 0;
 }
-
-/* METRIC LABEL */
 
 .ll-dash-metric__label {
   color: #aab7da;
-
   font-size: 11px;
   font-weight: 700;
-
   letter-spacing: 0.035em;
   line-height: 1.4;
-
   overflow-wrap: anywhere;
 }
-
-/* METRIC VALUE */
 
 .ll-dash-metric__value {
   display: block;
-
   min-width: 0;
-
   color: #f6f7ff;
-
   font-size: clamp(27px, 2.3vw, 36px);
   font-weight: 720;
-
   line-height: 1.1;
   letter-spacing: -0.035em;
-
   font-variant-numeric: tabular-nums;
-
   overflow-wrap: anywhere;
 }
-
-/* METRIC DETAIL */
 
 .ll-dash-metric__detail {
   color: #a0adce;
-
   font-size: 12px;
   line-height: 1.5;
-
   overflow-wrap: anywhere;
 }
 
-/* METRIC PERCENTAGE */
-
 .ll-dash-metric__percentage {
   color: color-mix(in srgb, var(--metric-accent) 72%, white);
-
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-
   white-space: nowrap;
 }
-
-/* METRIC HOVER */
 
 @media (hover: hover) and (pointer: fine) {
   .ll-dash-metric:hover {
@@ -327,23 +287,15 @@
   }
 }
 
-/* ==========================================================
-   CHARTS GRID
-========================================================== */
+/* CHARTS GRID */
 
 .ll-dash-visuals {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1.75fr)
-    minmax(0, 1fr);
-
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
   align-items: stretch;
   gap: 16px;
-
   width: 100%;
   min-width: 0;
-
   margin-top: 16px;
 }
 
@@ -352,19 +304,14 @@
   max-width: 100%;
 }
 
-/* ==========================================================
-   SHARED PANELS
-========================================================== */
+/* PANELS */
 
 .ll-dash-panel {
   min-width: 0;
   max-width: 100%;
-
   padding: 20px;
-
   border: 1px solid rgba(153, 106, 217, 0.24);
   border-radius: 14px;
-
   background: rgba(10, 16, 45, 0.87);
 }
 
@@ -372,10 +319,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-
   flex-wrap: wrap;
   gap: 10px;
-
   min-width: 0;
 }
 
@@ -386,47 +331,35 @@
 .ll-dash-panel h2,
 .ll-dash-table-heading h2 {
   margin: 0;
-
   color: #f6f7ff;
-
   font-size: 16px;
   font-weight: 700;
-
   line-height: 1.35;
 }
 
 .ll-dash-panel-heading p,
 .ll-dash-table-heading p {
   margin: 5px 0 0;
-
   color: #94a4ca;
-
   font-size: 12px;
   line-height: 1.5;
 }
 
-/* ==========================================================
-   CHART LEGEND
-========================================================== */
+/* LEGEND */
 
 .ll-dash-legend {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 10px 16px;
-
   margin-top: 20px;
 }
 
 .ll-dash-legend span {
   display: inline-flex;
   align-items: center;
-
   gap: 7px;
-
   color: #c4cce5;
-
   font-size: 11px;
 }
 
@@ -434,27 +367,21 @@
 .ll-dash-level i {
   display: inline-block;
   flex-shrink: 0;
-
   width: 8px;
   height: 8px;
-
   border-radius: 50%;
 }
 
-/* ==========================================================
-   GENERIC CHART CONTAINER
-========================================================== */
+/* GENERIC CHART */
 
 .ll-dash-chart {
   width: 100%;
   min-width: 0;
-
   margin-top: 10px;
 }
 
 .ll-dash-chart svg {
   display: block;
-
   width: 100%;
   height: clamp(180px, 20vw, 250px);
 }
@@ -462,36 +389,25 @@
 .ll-dash-chart-labels {
   display: flex;
   justify-content: space-between;
-
   gap: 12px;
-
   padding: 0 2%;
-
   color: #8b9cc4;
-
   font-size: 11px;
 }
 
 .ll-dash-muted {
   padding: 30px 0;
-
   color: #aebad8;
-
   font-size: 12px;
   line-height: 1.6;
-
   text-align: center;
 }
 
-/* ==========================================================
-   SEVERITIES
-========================================================== */
+/* LEGACY SEVERITY STYLES */
 
 .ll-dash-level-list {
   display: grid;
-
   gap: 16px;
-
   margin-top: 25px;
 }
 
@@ -503,78 +419,56 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 10px;
-
   margin-bottom: 7px;
 }
 
 .ll-dash-level > div:first-child > span {
   display: inline-flex;
   align-items: center;
-
   gap: 8px;
-
   min-width: 0;
-
   color: #d7dcf0;
-
   font-size: 12px;
 }
 
 .ll-dash-level strong {
   flex-shrink: 0;
-
   color: #f6f7ff;
-
   font-size: 12px;
   font-weight: 650;
-
   font-variant-numeric: tabular-nums;
 }
 
 .ll-dash-level__track {
   width: 100%;
   height: 6px;
-
   overflow: hidden;
-
   border-radius: 999px;
-
   background: rgba(85, 89, 137, 0.23);
 }
 
 .ll-dash-level__track span {
   display: block;
-
   height: 100%;
-
   border-radius: inherit;
-
   transition: width 200ms ease;
 }
 
 .ll-dash-level small {
   display: block;
-
   margin-top: 5px;
-
   color: #8495bb;
-
   font-size: 10px;
 }
 
-/* ==========================================================
-   TABLE PANEL
-========================================================== */
+/* TABLE PANEL */
 
 .ll-dash-table-panel {
   width: 100%;
   min-width: 0;
-
   margin-top: 16px;
   padding: 0;
-
   overflow: hidden;
 }
 
@@ -582,13 +476,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   flex-wrap: wrap;
   gap: 16px;
-
   width: 100%;
   min-width: 0;
-
   padding: 20px;
 }
 
@@ -596,17 +487,13 @@
   min-width: 0;
 }
 
-/* ==========================================================
-   TABLE FILTERS
-========================================================== */
+/* TABLE FILTERS */
 
 .ll-dash-controls {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 9px;
-
   min-width: 0;
 }
 
@@ -614,17 +501,12 @@
 .ll-dash-controls select {
   min-width: 0;
   min-height: 39px;
-
   padding: 9px 12px;
-
   border: 1px solid rgba(156, 102, 219, 0.29);
   border-radius: 9px;
-
   outline: none;
-
   background: #101735;
   color: #f5f2ff;
-
   font-family: inherit;
   font-size: 12px;
 }
@@ -636,13 +518,10 @@
 
 .ll-dash-controls select {
   max-width: 100%;
-
   cursor: pointer;
 }
 
-/* ==========================================================
-   ACCESSIBILITY
-========================================================== */
+/* ACCESSIBILITY */
 
 .ll-dash-controls input:focus-visible,
 .ll-dash-controls select:focus-visible,
@@ -652,20 +531,15 @@
   outline-offset: 2px;
 }
 
-/* ==========================================================
-   TABLE — HORIZONTAL SCROLL
-========================================================== */
+/* TABLE */
 
 .ll-dash-table-scroller {
   display: block;
-
   width: 100%;
   max-width: 100%;
   min-width: 0;
-
   overflow-x: auto;
   overflow-y: hidden;
-
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
@@ -673,37 +547,27 @@
 .ll-dash-table-scroller table {
   width: 100%;
   min-width: 760px;
-
   border-collapse: collapse;
   border-spacing: 0;
 }
 
 .ll-dash-table-scroller th {
   padding: 13px 17px;
-
   background: rgba(23, 26, 60, 0.6);
-
   color: #8495ba;
-
   font-size: 10px;
   font-weight: 700;
-
   letter-spacing: 0.05em;
   text-align: left;
-
   white-space: nowrap;
 }
 
 .ll-dash-table-scroller td {
   padding: 12px 17px;
-
   border-top: 1px solid rgba(119, 106, 181, 0.13);
-
   color: #b7c4e3;
-
   font-size: 12px;
   line-height: 1.5;
-
   vertical-align: middle;
 }
 
@@ -717,49 +581,37 @@
 
 .ll-dash-nowrap {
   white-space: nowrap;
-
   font-variant-numeric: tabular-nums;
 }
 
 .ll-dash-message {
   min-width: 250px;
   max-width: 650px;
-
   overflow-wrap: anywhere;
-
   color: #dfe6f8 !important;
 }
 
-/* ==========================================================
-   SEVERITY BADGES
-========================================================== */
+/* SEVERITY BADGES */
 
 .ll-dash-severity {
   display: inline-flex;
   align-items: center;
-
   padding: 4px 8px;
-
   border: 1px solid rgba(190, 109, 230, 0.25);
   border-radius: 6px;
-
   background: rgba(190, 109, 230, 0.12);
-
   color: #ddb3ff;
-
   font-size: 11px;
 }
 
 .ll-dash-severity--error {
   color: #ff78b7;
-
   background: rgba(245, 26, 131, 0.09);
   border-color: rgba(245, 26, 131, 0.23);
 }
 
 .ll-dash-severity--warn {
   color: #ffba83;
-
   background: rgba(255, 145, 77, 0.09);
   border-color: rgba(255, 145, 77, 0.22);
 }
@@ -770,56 +622,39 @@
 
 .ll-dash-severity--other {
   color: #e1d7a9;
-
   background: rgba(255, 196, 72, 0.05);
 }
 
-/* ==========================================================
-   EMPTY STATES / LOAD MORE / NOTES
-========================================================== */
+/* EMPTY STATES */
 
 .ll-dash-empty {
   padding: 24px;
-
   color: #aab7d8;
-
   font-size: 12px;
-
   text-align: center;
 }
 
 .ll-dash-showmore {
   display: block;
-
   margin: 14px auto;
   padding: 9px 18px;
-
   border: 1px solid rgba(174, 105, 245, 0.28);
   border-radius: 9px;
-
   background: transparent;
-
   color: #d8bdfc;
-
   font-size: 12px;
-
   cursor: pointer;
 }
 
 .ll-dash-note {
   padding: 13px 20px 17px;
-
   color: #a4aed4;
-
   font-size: 11px;
   line-height: 1.65;
-
   overflow-wrap: anywhere;
 }
 
-/* ==========================================================
-   RESPONSIVE — SMALL DESKTOP / TABLET LANDSCAPE
-========================================================== */
+/* SMALL DESKTOP */
 
 @media (max-width: 1100px) {
   .ll-dash-visuals {
@@ -831,9 +666,7 @@
   }
 }
 
-/* ==========================================================
-   RESPONSIVE — TABLET
-========================================================== */
+/* TABLET */
 
 @media (max-width: 790px) {
   .ll-dash-page {
@@ -855,24 +688,17 @@
   .ll-dash-intro {
     flex-direction: column;
     align-items: flex-start;
-
     gap: 14px;
-
     padding: 23px 0 22px;
   }
 
   .ll-dash-file {
     flex: none;
-
     width: 100%;
     max-width: 100%;
-
     align-items: flex-start;
-
     text-align: left;
   }
-
-  /* METRICS */
 
   .ll-dash-metrics {
     gap: 11px;
@@ -880,7 +706,6 @@
 
   .ll-dash-metric {
     min-height: 112px;
-
     padding: 16px;
     gap: 12px;
   }
@@ -889,13 +714,9 @@
     font-size: clamp(26px, 4vw, 34px);
   }
 
-  /* PANELS */
-
   .ll-dash-panel {
     padding: 18px;
   }
-
-  /* TABLE */
 
   .ll-dash-table-panel {
     padding: 0;
@@ -904,9 +725,7 @@
   .ll-dash-table-heading {
     align-items: stretch;
     flex-direction: column;
-
     gap: 13px;
-
     padding: 18px;
   }
 
@@ -923,9 +742,7 @@
   }
 }
 
-/* ==========================================================
-   RESPONSIVE — MOBILE
-========================================================== */
+/* MOBILE */
 
 @media (max-width: 560px) {
   .ll-dash-page {
@@ -937,29 +754,22 @@
     min-width: 0;
   }
 
-  /* HEADER */
-
   .ll-dash-header {
     flex-wrap: nowrap;
     align-items: center;
-
     gap: 8px;
-
     padding: 2px 0 15px;
   }
 
   .ll-dash-identity {
     flex: 1 1 auto;
-
     gap: 0;
-
     min-width: 0;
   }
 
   .ll-dash-identity img {
     width: auto;
     height: 35px;
-
     max-width: min(145px, 100%);
   }
 
@@ -969,21 +779,14 @@
 
   .ll-dash-new {
     flex: 0 0 auto;
-
     min-height: 36px;
-
     padding: 8px 10px;
-
     border-radius: 8px;
-
     font-size: 10px;
   }
 
-  /* INTRO */
-
   .ll-dash-intro {
     gap: 15px;
-
     padding: 22px 0 19px;
   }
 
@@ -994,7 +797,6 @@
 
   .ll-dash-intro h1 {
     margin: 6px 0 7px;
-
     font-size: clamp(24px, 6.5vw, 30px);
   }
 
@@ -1014,23 +816,16 @@
     font-size: 11px;
   }
 
-  /* METRICS */
-
   .ll-dash-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-
     gap: 9px;
   }
 
   .ll-dash-metric {
     grid-template-columns: 23px minmax(0, 1fr);
-
     min-height: 112px;
-
     gap: 8px;
-
     padding: 12px;
-
     border-radius: 12px;
   }
 
@@ -1062,24 +857,17 @@
     line-height: 1.4;
   }
 
-  /* CHARTS */
-
   .ll-dash-visuals {
     display: grid;
-
     grid-template-columns: minmax(0, 1fr);
-
     gap: 12px;
-
     margin-top: 12px;
   }
 
   .ll-dash-panel {
     width: 100%;
     min-width: 0;
-
     padding: 15px;
-
     border-radius: 12px;
   }
 
@@ -1099,17 +887,12 @@
 
   .ll-dash-mini-tag {
     max-width: 100%;
-
     padding: 5px 8px;
-
     font-size: 10px;
   }
 
-  /* SEVERITIES */
-
   .ll-dash-level-list {
     gap: 14px;
-
     margin-top: 19px;
   }
 
@@ -1117,8 +900,6 @@
   .ll-dash-level strong {
     font-size: 11px;
   }
-
-  /* TABLE */
 
   .ll-dash-table-panel {
     margin-top: 12px;
@@ -1131,11 +912,8 @@
 
   .ll-dash-controls {
     display: grid;
-
     grid-template-columns: minmax(0, 1fr);
-
     gap: 9px;
-
     width: 100%;
   }
 
@@ -1148,7 +926,6 @@
 
   .ll-dash-table-scroller {
     width: 100%;
-
     overflow-x: auto;
   }
 
@@ -1167,9 +944,7 @@
   }
 }
 
-/* ==========================================================
-   RESPONSIVE — VERY SMALL MOBILE
-========================================================== */
+/* VERY SMALL MOBILE */
 
 @media (max-width: 360px) {
   .ll-dash-page {
@@ -1184,15 +959,12 @@
 
   .ll-dash-new {
     padding: 7px 8px;
-
     font-size: 9px;
   }
 
   .ll-dash-metric {
     grid-template-columns: 20px minmax(0, 1fr);
-
     padding: 10px;
-
     gap: 6px;
   }
 
@@ -1215,9 +987,7 @@
   }
 }
 
-/* ==========================================================
-   REDUCED MOTION
-========================================================== */
+/* REDUCED MOTION */
 
 @media (prefers-reduced-motion: reduce) {
   .ll-dash-page *,
