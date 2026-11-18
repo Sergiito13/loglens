@@ -1,52 +1,680 @@
 /* ==========================================================
    LOGLENS — NGINX ERROR DASHBOARD
-   Responsive components
+   ECharts · Interactive Severity Filters · Responsive
 ========================================================== */
 
 /* ==========================================================
    TIMELINE — APACHE ECHARTS
 ========================================================== */
 
+.ll-dash-visuals > .ll-dash-panel--chart {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .ll-nginx-chart {
   position: relative;
-
   display: block;
 
   width: 100%;
-  max-width: 100%;
   min-width: 0;
 
-  height: 305px;
-  min-height: 230px;
+  flex: 1 1 305px;
+  height: clamp(290px, 23vw, 395px);
+  min-height: 290px;
 
-  margin-top: 16px;
-
+  margin-top: 14px;
   overflow: hidden;
 }
 
-/* ECharts generates its own canvas wrapper */
-
-.ll-nginx-chart > div {
+.ll-nginx-chart > div,
+.ll-nginx-chart canvas {
   max-width: 100%;
 }
-
-.ll-nginx-chart canvas {
-  display: block;
-}
-
-/* ==========================================================
-   TIMELINE INFORMATION
-========================================================== */
 
 .ll-nginx-chart-note {
   margin: 12px 0 0;
 
   color: #9daacc;
-
   font-size: 11px;
   line-height: 1.6;
 
   overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   SEVERITY PANEL
+========================================================== */
+
+.ll-dash-panel--levels {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ll-nginx-severity-header {
+  margin-bottom: 13px;
+}
+
+/* ==========================================================
+   SEVERITY TOOLBAR
+========================================================== */
+
+.ll-nginx-severity-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  padding-bottom: 13px;
+
+  border-bottom: 1px solid rgba(119, 106, 181, 0.16);
+}
+
+/* ==========================================================
+   DISTRIBUTION / DETAIL TABS
+========================================================== */
+
+.ll-nginx-severity-tabs {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 3px;
+  padding: 3px;
+
+  border: 1px solid rgba(153, 106, 217, 0.23);
+  border-radius: 9px;
+
+  background: rgba(8, 13, 37, 0.4);
+}
+
+.ll-nginx-severity-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 32px;
+  padding: 7px 12px;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #9eafd2;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  cursor: pointer;
+
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.ll-nginx-severity-tab:hover {
+  color: #f6f7ff;
+}
+
+.ll-nginx-severity-tab.is-active {
+  border-color: rgba(185, 91, 255, 0.45);
+  background: rgba(139, 53, 245, 0.16);
+  color: #f6eaff;
+}
+
+/* ==========================================================
+   RESET FILTERS
+========================================================== */
+
+.ll-nginx-severity-reset {
+  min-height: 37px;
+  padding: 8px 12px;
+
+  border: 1px solid rgba(174, 105, 245, 0.32);
+  border-radius: 9px;
+
+  background: rgba(139, 53, 245, 0.07);
+  color: #dcc7ff;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  cursor: pointer;
+}
+
+.ll-nginx-severity-reset:hover:not(:disabled) {
+  background: rgba(139, 53, 245, 0.18);
+}
+
+.ll-nginx-severity-reset:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   SEVERITY DISTRIBUTION LAYOUT
+========================================================== */
+
+.ll-nginx-severity-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(150px, 0.84fr)
+    minmax(0, 1.16fr);
+
+  align-items: center;
+
+  gap: clamp(14px, 1.8vw, 30px);
+
+  width: 100%;
+  min-width: 0;
+
+  margin: auto 0;
+  padding: 22px 0;
+}
+
+/* ==========================================================
+   DONUT CHART CONTAINER
+========================================================== */
+
+.ll-nginx-severity-donut {
+  position: relative;
+
+  width: min(100%, 265px);
+  min-width: 0;
+
+  aspect-ratio: 1 / 1;
+
+  justify-self: center;
+}
+
+/* ==========================================================
+   ECHARTS CANVAS
+========================================================== */
+
+.ll-nginx-severity-canvas {
+  position: absolute;
+  inset: 0;
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================
+   DONUT CENTER
+========================================================== */
+
+.ll-nginx-severity-center {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+  width: 62%;
+
+  transform: translate(-50%, -50%);
+
+  text-align: center;
+  pointer-events: none;
+}
+
+.ll-nginx-severity-center strong {
+  display: block;
+
+  max-width: 100%;
+
+  color: #f6f7ff;
+
+  font-size: clamp(17px, 1.45vw, 26px);
+  font-weight: 720;
+
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.ll-nginx-severity-center span {
+  color: #a6b4d4;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.ll-nginx-severity-center small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 8px;
+
+  border: 1px solid rgba(245, 26, 131, 0.3);
+  border-radius: 999px;
+
+  background: rgba(245, 26, 131, 0.1);
+  color: #ff8cbd;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   INTERACTIVE SEVERITY LEGEND
+========================================================== */
+
+.ll-nginx-severity-legend {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==========================================================
+   LEGEND GRID
+========================================================== */
+
+.ll-nginx-severity-columns,
+.ll-nginx-severity-item {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    76px
+    50px
+    18px;
+
+  align-items: center;
+  gap: 7px;
+}
+
+/* ==========================================================
+   COLUMN HEADERS
+========================================================== */
+
+.ll-nginx-severity-columns {
+  padding: 0 8px 9px;
+
+  border-bottom: 1px solid rgba(119, 106, 181, 0.2);
+
+  color: #8495ba;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ll-nginx-severity-columns span:nth-child(2),
+.ll-nginx-severity-columns span:nth-child(3) {
+  text-align: right;
+}
+
+/* ==========================================================
+   LEGEND ROW
+========================================================== */
+
+.ll-nginx-severity-item {
+  width: 100%;
+  min-width: 0;
+  min-height: 37px;
+
+  padding: 8px;
+
+  border: 1px solid transparent;
+  border-bottom-color: rgba(119, 106, 181, 0.12);
+  border-radius: 6px;
+
+  background: transparent;
+  color: #d4dcf1;
+
+  font-family: inherit;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    opacity 150ms ease;
+}
+
+.ll-nginx-severity-item:hover {
+  background: rgba(139, 53, 245, 0.08);
+}
+
+.ll-nginx-severity-item.is-selected {
+  border-color: rgba(171, 100, 241, 0.32);
+  background: rgba(139, 53, 245, 0.12);
+}
+
+.ll-nginx-severity-item.is-muted {
+  opacity: 0.48;
+}
+
+.ll-nginx-severity-item.is-muted:hover {
+  opacity: 0.84;
+}
+
+/* ==========================================================
+   LEGEND NAME
+========================================================== */
+
+.ll-nginx-severity-name {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+  min-width: 0;
+
+  color: #d4dcf1;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ll-nginx-severity-dot {
+  display: inline-block;
+
+  flex: 0 0 8px;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+}
+
+/* ==========================================================
+   LEGEND VALUES
+========================================================== */
+
+.ll-nginx-severity-item > strong {
+  color: #f6f7ff;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  text-align: right;
+
+  font-variant-numeric: tabular-nums;
+}
+
+.ll-nginx-severity-item > small {
+  color: #a3b1d0;
+
+  font-size: 10px;
+  text-align: right;
+
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   CHECKBOX
+========================================================== */
+
+.ll-nginx-severity-check {
+  display: grid;
+  place-items: center;
+
+  width: 16px;
+  height: 16px;
+
+  border: 1px solid rgba(139, 145, 190, 0.5);
+  border-radius: 4px;
+
+  background: rgba(16, 23, 53, 0.8);
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ll-nginx-severity-check.is-checked {
+  border-color: #b45cff;
+  background: #ad42d7;
+}
+
+/* ==========================================================
+   DETAILS VIEW
+========================================================== */
+
+.ll-nginx-severity-breakdown {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr);
+
+  gap: 7px;
+  padding: 18px 0 12px;
+}
+
+.ll-nginx-breakdown-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  width: 100%;
+  padding: 11px;
+
+  border: 1px solid rgba(119, 106, 181, 0.16);
+  border-radius: 9px;
+
+  background: rgba(8, 13, 37, 0.2);
+  color: #d4dcf1;
+
+  font-family: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.ll-nginx-breakdown-item:hover {
+  background: rgba(139, 53, 245, 0.07);
+}
+
+.ll-nginx-breakdown-item.is-selected {
+  border-color: rgba(171, 100, 241, 0.45);
+  background: rgba(139, 53, 245, 0.1);
+}
+
+/* ==========================================================
+   BREAKDOWN HEADINGS
+========================================================== */
+
+.ll-nginx-breakdown-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ll-nginx-breakdown-heading > span:first-child {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.ll-nginx-breakdown-heading i {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+}
+
+/* ==========================================================
+   BREAKDOWN BARS
+========================================================== */
+
+.ll-nginx-breakdown-track {
+  display: block;
+
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(85, 89, 137, 0.23);
+}
+
+.ll-nginx-breakdown-track > span {
+  display: block;
+
+  height: 100%;
+
+  border-radius: inherit;
+}
+
+/* ==========================================================
+   ACTIVE FILTER FOOTER
+========================================================== */
+
+.ll-nginx-filter-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  min-height: 43px;
+
+  margin-top: auto;
+  padding: 10px 12px;
+
+  border: 1px solid rgba(171, 100, 241, 0.25);
+  border-radius: 9px;
+
+  background: rgba(139, 53, 245, 0.07);
+}
+
+.ll-nginx-filter-label,
+.ll-nginx-filter-hint {
+  color: #aab7da;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ll-nginx-filter-label {
+  color: #c6b7e7;
+  font-weight: 600;
+}
+
+/* ==========================================================
+   FILTER CHIPS
+========================================================== */
+
+.ll-nginx-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 6px;
+  min-width: 0;
+}
+
+.ll-nginx-filter-chip {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+  padding: 5px 9px;
+
+  border: 1px solid rgba(171, 100, 241, 0.4);
+  border-radius: 999px;
+
+  background: rgba(139, 53, 245, 0.17);
+  color: #e9d8ff;
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+}
+
+.ll-nginx-filter-chip:hover {
+  background: rgba(139, 53, 245, 0.3);
+}
+
+.ll-nginx-filter-chip span {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ll-nginx-filter-summary {
+  margin-left: auto;
+
+  color: #bdc8e3;
+
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   EXPLORER ACTIVE FILTER
+========================================================== */
+
+.ll-nginx-table-active-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 8px 16px;
+
+  padding: 10px 20px;
+
+  border-top: 1px solid rgba(119, 106, 181, 0.13);
+  border-bottom: 1px solid rgba(119, 106, 181, 0.13);
+
+  background: rgba(139, 53, 245, 0.06);
+  color: #aab7da;
+
+  font-size: 11px;
+}
+
+.ll-nginx-table-active-filter strong {
+  color: #e4d1ff;
+}
+
+.ll-nginx-table-active-filter button {
+  margin-left: auto;
+
+  padding: 5px 9px;
+
+  border: 1px solid rgba(171, 100, 241, 0.35);
+  border-radius: 7px;
+
+  background: rgba(139, 53, 245, 0.1);
+  color: #dcc7ff;
+
+  font-family: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
 }
 
 /* ==========================================================
@@ -62,13 +690,8 @@
 
 .ll-nginx-frequent-list {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
 
-  gap: 0;
-
-  width: 100%;
   min-width: 0;
-
   margin-top: 16px;
 }
 
@@ -79,9 +702,7 @@
 
   gap: 14px;
 
-  width: 100%;
   min-width: 0;
-
   padding: 12px 0;
 
   border-bottom: 1px solid rgba(119, 106, 181, 0.15);
@@ -92,27 +713,21 @@
 }
 
 .ll-nginx-frequent-item code {
-  flex: 1 1 auto;
-
+  flex: 1;
   min-width: 0;
 
   color: #e5def9;
 
-  font-family: monospace;
-  font-size: 12px;
-  line-height: 1.5;
-
+  font: 12px/1.5 monospace;
   overflow-wrap: anywhere;
 }
 
 .ll-nginx-frequent-item strong {
-  flex: 0 0 auto;
+  flex-shrink: 0;
 
   color: #ff8db9;
 
   font-size: 14px;
-  font-weight: 700;
-
   font-variant-numeric: tabular-nums;
 }
 
@@ -126,14 +741,12 @@
   justify-content: center;
 
   min-height: 32px;
-
   padding: 6px 11px;
 
   border: 1px solid rgba(174, 105, 245, 0.35);
   border-radius: 7px;
 
   background: rgba(139, 53, 245, 0.12);
-
   color: #e7ceff;
 
   font-family: inherit;
@@ -141,22 +754,11 @@
   font-weight: 600;
 
   white-space: nowrap;
-
   cursor: pointer;
-
-  transition:
-    background 150ms ease,
-    border-color 150ms ease;
 }
 
 .ll-nginx-detail-button:hover {
   background: rgba(139, 53, 245, 0.24);
-  border-color: rgba(174, 105, 245, 0.65);
-}
-
-.ll-nginx-detail-button:focus-visible {
-  outline: 2px solid #ee8fff;
-  outline-offset: 2px;
 }
 
 /* ==========================================================
@@ -178,24 +780,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   flex-wrap: wrap;
+
   gap: 12px;
-
-  min-width: 0;
-
   margin-bottom: 14px;
 }
 
 .ll-nginx-detail-heading h3 {
-  min-width: 0;
-
   margin: 0;
 
   color: #f6f7ff;
-
   font-size: 15px;
-  font-weight: 650;
 
   overflow-wrap: anywhere;
 }
@@ -213,7 +808,6 @@
 
 .ll-nginx-detail p strong {
   color: #e0e5f5;
-  font-weight: 650;
 }
 
 /* ==========================================================
@@ -224,7 +818,6 @@
   display: block;
 
   width: 100%;
-  max-width: 100%;
   min-width: 0;
 
   margin: 14px 0 0;
@@ -236,17 +829,44 @@
   border-radius: 9px;
 
   background: #080d25;
-
   color: #e7eafd;
 
-  font-family: monospace;
-  font-size: 11px;
-  line-height: 1.7;
+  font: 11px/1.7 monospace;
 
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
 
-  -webkit-overflow-scrolling: touch;
+/* ==========================================================
+   KEYBOARD ACCESSIBILITY
+========================================================== */
+
+.ll-nginx-severity-tab:focus-visible,
+.ll-nginx-severity-reset:focus-visible,
+.ll-nginx-severity-item:focus-visible,
+.ll-nginx-breakdown-item:focus-visible,
+.ll-nginx-filter-chip:focus-visible,
+.ll-nginx-table-active-filter button:focus-visible,
+.ll-nginx-detail-button:focus-visible {
+  outline: 2px solid #ee8fff;
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   RESPONSIVE — MEDIUM DESKTOP
+========================================================== */
+
+@media (max-width: 1450px) and (min-width: 1101px) {
+  .ll-nginx-severity-layout {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+
+    gap: 12px;
+  }
+
+  .ll-nginx-severity-donut {
+    width: min(100%, 205px);
+  }
 }
 
 /* ==========================================================
@@ -255,7 +875,39 @@
 
 @media (max-width: 1100px) {
   .ll-nginx-chart {
-    height: 320px;
+    height: 315px;
+  }
+
+  .ll-nginx-severity-layout {
+    grid-template-columns:
+      230px
+      minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE — SMALL TABLET
+========================================================== */
+
+@media (max-width: 660px) {
+  .ll-nginx-severity-layout {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+
+    gap: 10px;
+    padding: 16px 0;
+  }
+
+  .ll-nginx-severity-donut {
+    width: min(100%, 215px);
+  }
+
+  .ll-nginx-severity-center strong {
+    font-size: 21px;
+  }
+
+  .ll-nginx-severity-toolbar {
+    align-items: stretch;
   }
 }
 
@@ -264,65 +916,77 @@
 ========================================================== */
 
 @media (max-width: 560px) {
-  /* TIMELINE */
-
   .ll-nginx-chart {
-    width: 100%;
-    max-width: 100%;
+    flex-basis: 255px;
 
-    height: 245px;
-    min-height: 245px;
+    height: 255px;
+    min-height: 255px;
 
     margin-top: 12px;
   }
 
   .ll-nginx-chart-note {
-    margin-top: 10px;
-
     font-size: 10px;
-    line-height: 1.6;
   }
 
-  /* FREQUENT ERRORS */
-
-  .ll-nginx-frequent {
-    margin-top: 12px;
+  .ll-nginx-severity-tabs {
+    width: 100%;
   }
 
-  .ll-nginx-frequent-list {
-    margin-top: 12px;
+  .ll-nginx-severity-tab {
+    flex: 1 1 0;
   }
 
-  .ll-nginx-frequent-item {
-    align-items: flex-start;
-
-    gap: 10px;
-
-    padding: 11px 0;
+  .ll-nginx-severity-reset {
+    width: 100%;
   }
 
-  .ll-nginx-frequent-item code {
-    font-size: 11px;
-    line-height: 1.5;
+  .ll-nginx-severity-toolbar {
+    flex-direction: column;
   }
 
-  .ll-nginx-frequent-item strong {
-    font-size: 12px;
+  .ll-nginx-severity-layout {
+    padding: 14px 0;
   }
 
-  /* DETAIL */
+  .ll-nginx-severity-columns,
+  .ll-nginx-severity-item {
+    grid-template-columns:
+      minmax(0, 1fr)
+      60px
+      44px
+      16px;
+
+    gap: 5px;
+  }
+
+  .ll-nginx-severity-columns {
+    font-size: 8px;
+  }
+
+  .ll-nginx-severity-name {
+    font-size: 10px;
+  }
+
+  .ll-nginx-severity-item > strong {
+    font-size: 10px;
+  }
+
+  .ll-nginx-severity-item > small {
+    font-size: 9px;
+  }
+
+  .ll-nginx-filter-summary {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .ll-nginx-table-active-filter {
+    padding: 10px 15px;
+  }
 
   .ll-nginx-detail {
     padding: 15px;
-  }
-
-  .ll-nginx-detail-heading {
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .ll-nginx-detail-heading h3 {
-    font-size: 13px;
   }
 
   .ll-nginx-detail p {
@@ -330,10 +994,8 @@
   }
 
   .ll-nginx-detail pre {
-    padding: 11px;
-
     font-size: 10px;
-    line-height: 1.65;
+    padding: 11px;
   }
 }
 
@@ -343,8 +1005,14 @@
 
 @media (max-width: 380px) {
   .ll-nginx-chart {
-    height: 225px;
-    min-height: 225px;
+    flex-basis: 235px;
+
+    height: 235px;
+    min-height: 235px;
+  }
+
+  .ll-nginx-severity-donut {
+    width: min(100%, 190px);
   }
 
   .ll-nginx-frequent-item code {
@@ -361,6 +1029,8 @@
 ========================================================== */
 
 @media (prefers-reduced-motion: reduce) {
+  .ll-nginx-severity-tab,
+  .ll-nginx-severity-item,
   .ll-nginx-detail-button {
     transition: none;
   }

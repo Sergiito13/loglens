@@ -1,3 +1,5 @@
+import { useCallback, useState } from 'react';
+
 import type { DashboardProps } from '../../types';
 
 import { DashboardHeader } from '../../components/DashboardHeader';
@@ -16,13 +18,53 @@ import './NginxErrorDashboard.css';
 const formatter = new Intl.NumberFormat('es-ES');
 
 export function NginxErrorDashboard({ file, result, onNewFile }: DashboardProps) {
+  /* ========================================================
+     SHARED SEVERITY FILTERS
+  ======================================================== */
+
+  const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
+
+  /* ========================================================
+     TOGGLE A SEVERITY
+  ======================================================== */
+
+  const toggleSeverity = useCallback((severity: string) => {
+    setSelectedSeverities((current) => {
+      if (current.includes(severity)) {
+        return current.filter((item) => item !== severity);
+      }
+
+      return [...current, severity];
+    });
+  }, []);
+
+  /* ========================================================
+     SELECT ONLY ONE SEVERITY
+  ======================================================== */
+
+  const selectSeverity = useCallback((severity: string) => {
+    setSelectedSeverities([severity]);
+  }, []);
+
+  /* ========================================================
+     RESET FILTERS
+  ======================================================== */
+
+  const clearSeverityFilters = useCallback(() => {
+    setSelectedSeverities([]);
+  }, []);
+
+  /* ========================================================
+     RENDER
+  ======================================================== */
+
   return (
     <DashboardLayout>
-      {/* CABECERA */}
+      {/* HEADER */}
 
       <DashboardHeader onNewFile={onNewFile} />
 
-      {/* INFORMACIÓN DEL ARCHIVO */}
+      {/* FILE INFORMATION */}
 
       <section className="ll-dash-intro">
         <div>
@@ -46,25 +88,35 @@ export function NginxErrorDashboard({ file, result, onNewFile }: DashboardProps)
         </div>
       </section>
 
-      {/* INDICADORES */}
+      {/* METRICS */}
 
       <NginxErrorMetrics result={result} />
 
-      {/* GRÁFICOS */}
+      {/* CHARTS */}
 
       <section className="ll-dash-visuals" aria-label="Gráficos de análisis">
         <NginxErrorTimeline entries={result.entries} truncated={result.truncatedEntries} />
 
-        <NginxSeverityChart result={result} />
+        <NginxSeverityChart
+          result={result}
+          selectedSeverities={selectedSeverities}
+          onToggleSeverity={toggleSeverity}
+          onClearFilters={clearSeverityFilters}
+        />
       </section>
 
-      {/* PROBLEMAS FRECUENTES */}
+      {/* FREQUENT ERRORS */}
 
       <NginxFrequentErrors entries={result.entries} truncated={result.truncatedEntries} />
 
-      {/* EXPLORADOR */}
+      {/* LOG EXPLORER */}
 
-      <NginxErrorTable result={result} />
+      <NginxErrorTable
+        result={result}
+        selectedSeverities={selectedSeverities}
+        onSelectSeverity={selectSeverity}
+        onClearSeverityFilters={clearSeverityFilters}
+      />
     </DashboardLayout>
   );
 }

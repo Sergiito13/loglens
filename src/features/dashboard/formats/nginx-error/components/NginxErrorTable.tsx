@@ -4,7 +4,29 @@ import type { LogEntry } from '../../../../../core/logs/parsers/types';
 
 import type { LogProcessingResult } from '../../../../../core/logs/processing/types';
 
+/* ==========================================================
+   TYPES
+========================================================== */
+
+interface NginxErrorTableProps {
+  result: LogProcessingResult;
+
+  selectedSeverities: readonly string[];
+
+  onSelectSeverity: (severity: string) => void;
+
+  onClearSeverityFilters: () => void;
+}
+
+/* ==========================================================
+   FORMATTER
+========================================================== */
+
 const nf = new Intl.NumberFormat('es-ES');
+
+/* ==========================================================
+   BADGE
+========================================================== */
 
 function badge(level: string) {
   if (level === 'error') return 'error';
@@ -18,37 +40,93 @@ function badge(level: string) {
   return 'other';
 }
 
-export function NginxErrorTable({ result }: { result: LogProcessingResult }) {
-  const [search, setSearch] = useState('');
+/* ==========================================================
+   COMPONENT
+========================================================== */
 
-  const [level, setLevel] = useState('all');
+export function NginxErrorTable({
+  result,
+  selectedSeverities,
+  onSelectSeverity,
+  onClearSeverityFilters,
+}: NginxErrorTableProps) {
+  const [search, setSearch] = useState('');
 
   const [limit, setLimit] = useState(25);
 
   const [selected, setSelected] = useState<LogEntry | null>(null);
 
-  const levels = useMemo(
-    () =>
-      Object.keys(result.levelCounts).sort((a, b) => result.levelCounts[b] - result.levelCounts[a]),
-    [result.levelCounts],
-  );
+  /* ========================================================
+     AVAILABLE LEVELS
+  ======================================================== */
+
+  const levels = useMemo(() => {
+    return Object.keys(result.levelCounts)
+      .filter((level) => result.levelCounts[level] > 0)
+      .sort((a, b) => result.levelCounts[b] - result.levelCounts[a]);
+  }, [result.levelCounts]);
+
+  /* ========================================================
+     FILTERED ROWS
+  ======================================================== */
 
   const rows = useMemo(() => {
     const text = search.trim().toLocaleLowerCase('es');
 
-    return result.entries.filter(
-      (entry) =>
-        (level === 'all' || entry.level === level) &&
-        (!text ||
-          `${entry.message} ${entry.raw} ${entry.timestamp ?? ''}`
-            .toLocaleLowerCase('es')
-            .includes(text)),
-    );
-  }, [result.entries, level, search]);
+    const activeLevels = new Set(selectedSeverities);
+
+    return result.entries.filter((entry) => {
+      const matchesSeverity = activeLevels.size === 0 || activeLevels.has(entry.level);
+
+      const matchesText =
+        !text ||
+        `${entry.message} ${entry.raw} ${entry.timestamp ?? ''}`
+          .toLocaleLowerCase('es')
+          .includes(text);
+
+      return matchesSeverity && matchesText;
+    });
+  }, [result.entries, selectedSeverities, search]);
+
+  /* ========================================================
+     SELECT VALUE
+  ======================================================== */
+
+  const selectValue =
+    selectedSeverities.length === 0
+      ? 'all'
+      : selectedSeverities.length === 1
+        ? selectedSeverities[0]
+        : 'multiple';
+
+  /* ========================================================
+     FULL FILE SELECTED COUNT
+  ======================================================== */
+
+  const selectedTotal =
+    selectedSeverities.length === 0
+      ? result.parsedLines
+      : selectedSeverities.reduce(
+          (total, severity) => total + (result.levelCounts[severity] ?? 0),
+          0,
+        );
+
+  /* ========================================================
+     SELECTED ROW DETAILS
+  ======================================================== */
+
+  const visibleSelected =
+    selected !== null && rows.some((entry) => entry.lineNumber === selected.lineNumber)
+      ? selected
+      : null;
+
+  /* ========================================================
+     RENDER
+  ======================================================== */
 
   return (
-    <section className="ll-dash-panel ll-dash-table-panel">
-      {/* CABECERA */}
+    <section className="ll-dash-panel ll-dash-table-panel" id="ll-nginx-records">
+      {/* HEADER */}
 
       <div className="ll-dash-table-heading">
         <div>
@@ -60,7 +138,7 @@ export function NginxErrorTable({ result }: { result: LogProcessingResult }) {
           </p>
         </div>
 
-        {/* FILTROS */}
+        {/* FILTERS */}
 
         <div className="ll-dash-controls">
           <input
@@ -77,25 +155,55 @@ export function NginxErrorTable({ result }: { result: LogProcessingResult }) {
 
           <select
             aria-label="Filtrar por severidad"
-            value={level}
+            value={selectValue}
             onChange={(event) => {
-              setLevel(event.target.value);
+              const value = event.target.value;
+
+              if (value === 'all') {
+                onClearSeverityFilters();
+              } else {
+                onSelectSeverity(value);
+              }
+
               setLimit(25);
               setSelected(null);
             }}
           >
             <option value="all">Todas las severidades</option>
 
-            {levels.map((item) => (
-              <option key={item} value={item}>
-                {item.toUpperCase()}
+            {selectedSeverities.length > 1 && (
+              <option value="multiple" disabled>
+                {selectedSeverities.length} severidades seleccionadas
+              </option>
+            )}
+
+            {levels.map((level) => (
+              <option key={level} value={level}>
+                {level.toUpperCase()}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* TABLA */}
+      {/* ACTIVE FILTER INFORMATION */}
+
+      {selectedSeverities.length > 0 && (
+        <div className="ll-nginx-table-active-filter">
+          <span>
+            Filtrando:{' '}
+            <strong>{selectedSeverities.map((level) => level.toUpperCase()).join(' + ')}</strong>
+          </span>
+
+          <span>{nf.format(selectedTotal)} eventos en el archivo completo</span>
+
+          <button type="button" onClick={onClearSeverityFilters}>
+            Limpiar filtros
+          </button>
+        </div>
+      )}
+
+      {/* TABLE */}
 
       <div className="ll-dash-table-scroller">
         <table>
@@ -143,7 +251,7 @@ export function NginxErrorTable({ result }: { result: LogProcessingResult }) {
         )}
       </div>
 
-      {/* CARGAR MÁS */}
+      {/* LOAD MORE */}
 
       {rows.length > limit && (
         <button
@@ -155,16 +263,16 @@ export function NginxErrorTable({ result }: { result: LogProcessingResult }) {
         </button>
       )}
 
-      {/* DETALLE DEL REGISTRO */}
+      {/* RECORD DETAILS */}
 
-      {selected && (
+      {visibleSelected && (
         <div
           className="ll-nginx-detail"
           role="region"
           aria-label="Detalle del registro seleccionado"
         >
           <div className="ll-nginx-detail-heading">
-            <h3>Registro — línea {selected.lineNumber}</h3>
+            <h3>Registro — línea {visibleSelected.lineNumber}</h3>
 
             <button
               type="button"
@@ -176,30 +284,30 @@ export function NginxErrorTable({ result }: { result: LogProcessingResult }) {
           </div>
 
           <p>
-            <strong>Fecha:</strong> {selected.timestamp?.replace('T', ' ') ?? '—'}
+            <strong>Fecha:</strong> {visibleSelected.timestamp?.replace('T', ' ') ?? '—'}
             {' · '}
-            <strong>Nivel:</strong> {selected.level}
+            <strong>Nivel:</strong> {visibleSelected.level}
           </p>
 
           <p>
-            <strong>PID:</strong> {selected.metadata.processId ?? '—'}
+            <strong>PID:</strong> {visibleSelected.metadata.processId ?? '—'}
             {' · '}
-            <strong>Hilo:</strong> {selected.metadata.threadId ?? '—'}
+            <strong>Hilo:</strong> {visibleSelected.metadata.threadId ?? '—'}
             {' · '}
-            <strong>Conexión:</strong> {selected.metadata.connectionId ?? '—'}
+            <strong>Conexión:</strong> {visibleSelected.metadata.connectionId ?? '—'}
           </p>
 
-          <pre>{selected.raw}</pre>
+          <pre>{visibleSelected.raw}</pre>
         </div>
       )}
 
-      {/* LÍMITE DE MEMORIA */}
+      {/* RETENTION LIMIT */}
 
       {(result.truncatedEntries || result.truncatedIssues) && (
         <p className="ll-dash-note">
-          El archivo completo se procesó, pero la búsqueda y esta tabla solo incluyen{' '}
-          {nf.format(result.entries.length)} registros conservados. Los indicadores y las
-          severidades abarcan todo el archivo.
+          El archivo completo se procesó, pero la búsqueda y los filtros de esta tabla solo incluyen{' '}
+          {nf.format(result.entries.length)} registros conservados. Los contadores y el gráfico de
+          severidades representan el archivo completo.
         </p>
       )}
     </section>
