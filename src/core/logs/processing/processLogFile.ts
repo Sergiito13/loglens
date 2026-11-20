@@ -1,6 +1,6 @@
 import { detectFileFormat } from '../detection/detectLogFormat';
-
 import { logParsers } from '../parsers';
+import { LogTimeAggregator } from '../aggregation/LogTimeAggregator';
 
 import type { LogEntry, LogParseIssue } from '../parsers/types';
 
@@ -13,26 +13,15 @@ import type {
 
 /* ==========================================================
    LOGLENS — FILE PROCESSING ENGINE
+   Streaming reader + full-file temporal aggregation
 ========================================================== */
 
-/**
- * Default reading chunk: 256 KiB.
- */
 const DEFAULT_CHUNK_BYTES = 256 * 1024;
 
-/**
- * Maximum configurable chunk: 1 MiB.
- */
 const MAX_CHUNK_BYTES = 1024 * 1024;
 
-/**
- * Maximum individual log line length.
- */
 const MAX_LINE_CHARACTERS = 1024 * 1024;
 
-/**
- * Default memory retention limits.
- */
 const DEFAULT_STORED_ENTRIES = 10_000;
 
 const DEFAULT_STORED_ISSUES = 250;
@@ -64,19 +53,11 @@ function checkAborted(signal?: AbortSignal): void {
 ========================================================== */
 
 /**
- * Process a browser File or Blob.
+ * Process the entire file without loading it as one huge string.
  *
- * Features:
- *
- * - Automatic format detection.
- * - Chunk-based file reading.
- * - Registered parser selection.
- * - Real progress reporting.
- * - Cancellation support.
- * - Bounded result retention.
- *
- * The complete file is not loaded into memory
- * as one large string.
+ * Full-file counters and temporal buckets are calculated
+ * before applying the bounded retention limit used by
+ * the explorer.
  */
 export async function processLogFile(
   file: Blob,
@@ -130,6 +111,12 @@ export async function processLogFile(
   const levelCounts: Record<string, number> = {};
 
   /* ========================================================
+     TEMPORAL AGGREGATION
+  ======================================================== */
+
+  const timeAggregator = new LogTimeAggregator();
+
+  /* ========================================================
      3. PROGRESS REPORTING
   ======================================================== */
 
@@ -160,8 +147,6 @@ export async function processLogFile(
   checkAborted(options.signal);
 
   report('detecting');
-
-  checkAborted(options.signal);
 
   const detection = await detectFileFormat(file);
 
@@ -199,14 +184,23 @@ export async function processLogFile(
     if (entry) {
       parsedLines++;
 
+      /* ====================================================
+         SEVERITY COUNTERS
+      ==================================================== */
+
       levelCounts[entry.level] = (levelCounts[entry.level] ?? 0) + 1;
 
-      /*
-       * Keep only a bounded number of entries.
-       *
-       * All entries are counted, even when
-       * the retention limit has been reached.
-       */
+      /* ====================================================
+         TEMPORAL AGGREGATION
+      ==================================================== */
+
+      // Aggregate BEFORE applying the retention limit.
+      timeAggregator.add(entry);
+
+      /* ====================================================
+         RETAIN ENTRIES
+      ==================================================== */
+
       if (entries.length < maxEntries) {
         entries.push(entry);
       }
@@ -241,12 +235,10 @@ export async function processLogFile(
         continue;
       }
 
-      /*
-       * Wait for the next chunk when a CR
-       * is the final character.
-       *
-       * This preserves CRLF boundaries.
-       */
+      /* ====================================================
+         CRLF BOUNDARIES
+      ==================================================== */
+
       if (character === '\r' && i === text.length - 1 && !final) {
         break;
       }
@@ -259,9 +251,6 @@ export async function processLogFile(
 
       handleLine(line);
 
-      /*
-       * Treat CRLF as one line ending.
-       */
       if (character === '\r' && text[i + 1] === '\n') {
         i++;
       }
@@ -269,19 +258,20 @@ export async function processLogFile(
       start = i + 1;
     }
 
-    /*
-     * Preserve incomplete lines between chunks.
-     */
+    /* ======================================================
+       PENDING CONTENT
+    ====================================================== */
+
     pending = text.slice(start);
 
     if (pending.length > MAX_LINE_CHARACTERS) {
       throw new RangeError('A log line exceeds the maximum supported length (1 MiB).');
     }
 
-    /*
-     * Process the final line even when the file
-     * does not end with a newline.
-     */
+    /* ======================================================
+       FINAL LINE
+    ====================================================== */
+
     if (final && pending.length > 0) {
       handleLine(pending);
 
@@ -306,10 +296,10 @@ export async function processLogFile(
 
     checkAborted(options.signal);
 
-    /*
-     * Streaming decoding preserves UTF-8
-     * characters split across chunks.
-     */
+    /* ======================================================
+       STREAMING UTF-8 DECODING
+    ====================================================== */
+
     consume(decoder.decode(new Uint8Array(chunk), { stream: true }));
 
     bytesRead = end;
@@ -349,6 +339,12 @@ export async function processLogFile(
     invalidLines,
 
     levelCounts,
+
+    /* ======================================================
+       COMPLETE TEMPORAL STATISTICS
+    ====================================================== */
+
+    temporal: timeAggregator.result(),
 
     truncatedEntries: entries.length < parsedLines,
 

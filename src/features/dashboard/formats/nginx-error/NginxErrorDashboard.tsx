@@ -3,19 +3,32 @@ import { useCallback, useState } from 'react';
 import type { DashboardProps } from '../../types';
 
 import { DashboardHeader } from '../../components/DashboardHeader';
+
 import { DashboardLayout } from '../../components/DashboardLayout';
 
 import { formatFileSize } from '../../../../core/utils/formatFileSize';
 
 import { NginxErrorMetrics } from './components/NginxErrorMetrics';
+
 import { NginxErrorTimeline } from './components/NginxErrorTimeline';
+
 import { NginxSeverityChart } from './components/NginxSeverityChart';
+
 import { NginxFrequentErrors } from './components/NginxFrequentErrors';
+
 import { NginxErrorTable } from './components/NginxErrorTable';
 
 import './NginxErrorDashboard.css';
 
+/* ==========================================================
+   FORMATTERS
+========================================================== */
+
 const formatter = new Intl.NumberFormat('es-ES');
+
+/* ==========================================================
+   COMPONENT
+========================================================== */
 
 export function NginxErrorDashboard({ file, result, onNewFile }: DashboardProps) {
   /* ========================================================
@@ -25,21 +38,19 @@ export function NginxErrorDashboard({ file, result, onNewFile }: DashboardProps)
   const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
 
   /* ========================================================
-     TOGGLE A SEVERITY
+     TOGGLE SEVERITY
   ======================================================== */
 
   const toggleSeverity = useCallback((severity: string) => {
-    setSelectedSeverities((current) => {
-      if (current.includes(severity)) {
-        return current.filter((item) => item !== severity);
-      }
-
-      return [...current, severity];
-    });
+    setSelectedSeverities((current) =>
+      current.includes(severity)
+        ? current.filter((item) => item !== severity)
+        : [...current, severity],
+    );
   }, []);
 
   /* ========================================================
-     SELECT ONLY ONE SEVERITY
+     SELECT SEVERITY
   ======================================================== */
 
   const selectSeverity = useCallback((severity: string) => {
@@ -95,7 +106,11 @@ export function NginxErrorDashboard({ file, result, onNewFile }: DashboardProps)
       {/* CHARTS */}
 
       <section className="ll-dash-visuals" aria-label="Gráficos de análisis">
-        <NginxErrorTimeline entries={result.entries} truncated={result.truncatedEntries} />
+        {/* FULL FILE TEMPORAL ANALYSIS */}
+
+        <NginxErrorTimeline temporal={result.temporal} />
+
+        {/* SEVERITY DISTRIBUTION */}
 
         <NginxSeverityChart
           result={result}

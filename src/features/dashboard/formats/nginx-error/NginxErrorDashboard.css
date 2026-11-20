@@ -1,42 +1,7 @@
 /* ==========================================================
    LOGLENS — NGINX ERROR DASHBOARD
-   ECharts · Interactive Severity Filters · Responsive
+   Severity distribution · Frequent errors · Explorer
 ========================================================== */
-
-/* ==========================================================
-   TIMELINE
-========================================================== */
-
-.ll-dash-visuals > .ll-dash-panel--chart {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.ll-nginx-chart {
-  position: relative;
-  display: block;
-  width: 100%;
-  min-width: 0;
-  flex: 1 1 305px;
-  height: clamp(290px, 23vw, 395px);
-  min-height: 290px;
-  margin-top: 14px;
-  overflow: hidden;
-}
-
-.ll-nginx-chart > div,
-.ll-nginx-chart canvas {
-  max-width: 100%;
-}
-
-.ll-nginx-chart-note {
-  margin: 12px 0 0;
-  color: #9daacc;
-  font-size: 11px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
 
 /* ==========================================================
    SEVERITY PANEL
@@ -63,7 +28,7 @@
 }
 
 /* ==========================================================
-   TABS
+   SEVERITY TABS
 ========================================================== */
 
 .ll-nginx-severity-tabs {
@@ -120,7 +85,6 @@
   font-family: inherit;
   font-size: 11px;
   font-weight: 600;
-  line-height: 1.2;
   cursor: pointer;
 }
 
@@ -151,21 +115,20 @@
 }
 
 /* ==========================================================
-   DONUT
+   DONUT CHART
 ========================================================== */
 
 .ll-nginx-severity-donut {
   position: relative;
+  justify-self: center;
   width: min(100%, 265px);
   min-width: 0;
-  aspect-ratio: 1 / 1;
-  justify-self: center;
+  aspect-ratio: 1;
 }
 
 .ll-nginx-severity-canvas {
   position: absolute;
   inset: 0;
-  display: block;
   width: 100%;
   height: 100%;
 }
@@ -219,7 +182,6 @@
   color: #ff8cbd;
   font-size: 10px;
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
 }
 
 /* ==========================================================
@@ -233,10 +195,6 @@
   min-width: 0;
 }
 
-/* ==========================================================
-   LEGEND GRID — UPDATED FOR 20PX CHECKBOXES
-========================================================== */
-
 .ll-nginx-severity-columns,
 .ll-nginx-severity-item {
   display: grid;
@@ -248,6 +206,10 @@
   align-items: center;
   gap: 7px;
 }
+
+/* ==========================================================
+   LEGEND HEADERS
+========================================================== */
 
 .ll-nginx-severity-columns {
   padding: 0 8px 9px;
@@ -281,9 +243,9 @@
   text-align: left;
   cursor: pointer;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    opacity 150ms ease;
+    background-color 150ms,
+    border-color 150ms,
+    opacity 150ms;
 }
 
 .ll-nginx-severity-item:hover {
@@ -304,7 +266,7 @@
 }
 
 /* ==========================================================
-   LEGEND TEXT
+   LEGEND NAME
 ========================================================== */
 
 .ll-nginx-severity-name {
@@ -325,6 +287,10 @@
   border-radius: 50%;
 }
 
+/* ==========================================================
+   LEGEND VALUES
+========================================================== */
+
 .ll-nginx-severity-item > strong {
   color: #f6f7ff;
   font-size: 11px;
@@ -341,29 +307,24 @@
 }
 
 /* ==========================================================
-   CHECKBOX — UPDATED
+   CHECKBOX
 ========================================================== */
 
 .ll-nginx-severity-check {
   display: grid;
   place-items: center;
-
   width: 20px;
   height: 20px;
-
   border: 1px solid rgba(139, 145, 190, 0.55);
   border-radius: 5px;
-
   background: rgba(16, 23, 53, 0.8);
   color: #fff;
-
   font-size: 13px;
   font-weight: 700;
   line-height: 1;
-
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color 150ms,
+    border-color 150ms;
 }
 
 .ll-nginx-severity-check.is-checked {
@@ -376,7 +337,7 @@
 }
 
 /* ==========================================================
-   DETAILS VIEW
+   SEVERITY DETAILS VIEW
 ========================================================== */
 
 .ll-nginx-severity-breakdown {
@@ -447,7 +408,7 @@
 }
 
 /* ==========================================================
-   ACTIVE FILTER FOOTER
+   ACTIVE FILTERS
 ========================================================== */
 
 .ll-nginx-filter-footer {
@@ -514,7 +475,7 @@
 }
 
 /* ==========================================================
-   EXPLORER ACTIVE FILTER
+   TABLE FILTERS
 ========================================================== */
 
 .ll-nginx-table-active-filter {
@@ -592,7 +553,7 @@
 }
 
 /* ==========================================================
-   RECORD DETAIL BUTTON
+   RECORD DETAILS BUTTON
 ========================================================== */
 
 .ll-nginx-detail-button {
@@ -688,7 +649,7 @@
 }
 
 /* ==========================================================
-   RESPONSIVE — MEDIUM DESKTOP
+   RESPONSIVE
 ========================================================== */
 
 @media (max-width: 1450px) and (min-width: 1101px) {
@@ -703,25 +664,13 @@
   }
 }
 
-/* ==========================================================
-   RESPONSIVE — TABLET
-========================================================== */
-
 @media (max-width: 1100px) {
-  .ll-nginx-chart {
-    height: 315px;
-  }
-
   .ll-nginx-severity-layout {
     grid-template-columns:
       230px
       minmax(0, 1fr);
   }
 }
-
-/* ==========================================================
-   RESPONSIVE — SMALL TABLET
-========================================================== */
 
 @media (max-width: 660px) {
   .ll-nginx-severity-layout {
@@ -744,22 +693,7 @@
   }
 }
 
-/* ==========================================================
-   RESPONSIVE — MOBILE
-========================================================== */
-
 @media (max-width: 560px) {
-  .ll-nginx-chart {
-    flex-basis: 255px;
-    height: 255px;
-    min-height: 255px;
-    margin-top: 12px;
-  }
-
-  .ll-nginx-chart-note {
-    font-size: 10px;
-  }
-
   .ll-nginx-severity-tabs {
     width: 100%;
   }
@@ -780,8 +714,6 @@
     padding: 14px 0;
   }
 
-  /* Columnas adaptadas a los checkbox de 20px */
-
   .ll-nginx-severity-columns,
   .ll-nginx-severity-item {
     grid-template-columns:
@@ -796,10 +728,7 @@
     font-size: 8px;
   }
 
-  .ll-nginx-severity-name {
-    font-size: 10px;
-  }
-
+  .ll-nginx-severity-name,
   .ll-nginx-severity-item > strong {
     font-size: 10px;
   }
@@ -831,17 +760,7 @@
   }
 }
 
-/* ==========================================================
-   RESPONSIVE — SMALL MOBILE
-========================================================== */
-
 @media (max-width: 380px) {
-  .ll-nginx-chart {
-    flex-basis: 235px;
-    height: 235px;
-    min-height: 235px;
-  }
-
   .ll-nginx-severity-donut {
     width: min(100%, 190px);
   }
@@ -854,10 +773,6 @@
     padding: 12px;
   }
 }
-
-/* ==========================================================
-   REDUCED MOTION
-========================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .ll-nginx-severity-tab,
