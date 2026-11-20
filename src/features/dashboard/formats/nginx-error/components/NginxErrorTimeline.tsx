@@ -10,16 +10,24 @@ import { DataZoomComponent, GridComponent, TooltipComponent } from 'echarts/comp
 
 import { CanvasRenderer } from 'echarts/renderers';
 
+import type { LogTimeData, LogTimeCounts } from '../../../../../core/logs/processing/types';
+
+import {
+  TEMPORAL_RANGES as RANGES,
+  buildTimelineView,
+  isRangeAvailable,
+  summarizeTimelineView,
+} from '../../../../../core/logs/aggregation/temporalView';
+
 import type {
-  LogTimeData,
-  LogTimeCounts,
-  LogTimeSeries,
-} from '../../../../../core/logs/processing/types';
+  TemporalRange as Range,
+  ZoomWindow as Window,
+} from '../../../../../core/logs/aggregation/temporalView';
 
 import './NginxErrorTimeline.css';
 
 /* ==========================================================
-   ECHARTS REGISTRATION
+   LOGLENS — NGINX ERROR TIMELINE
 ========================================================== */
 
 echarts.use([LineChart, DataZoomComponent, GridComponent, TooltipComponent, CanvasRenderer]);
@@ -28,49 +36,12 @@ echarts.use([LineChart, DataZoomComponent, GridComponent, TooltipComponent, Canv
    TYPES
 ========================================================== */
 
-type Range = '1h' | '6h' | '24h' | '7d' | 'all';
-
 type Group = keyof LogTimeCounts;
-
-type Window = {
-  start: number;
-  end: number;
-};
-
-type TimelineView = {
-  times: number[];
-  labels: string[];
-  bins: LogTimeCounts[];
-  stepMs: number;
-  total: number;
-};
-
-/* ==========================================================
-   TIME CONSTANTS
-========================================================== */
 
 const HOUR = 3_600_000;
 
-const DAY = 24 * HOUR;
-
 /* ==========================================================
-   TIME RANGES
-========================================================== */
-
-const RANGES: {
-  id: Range;
-  label: string;
-  duration: number | null;
-}[] = [
-  { id: '1h', label: '1 h', duration: HOUR },
-  { id: '6h', label: '6 h', duration: 6 * HOUR },
-  { id: '24h', label: '24 h', duration: DAY },
-  { id: '7d', label: '7 d', duration: 7 * DAY },
-  { id: 'all', label: 'Todo', duration: null },
-];
-
-/* ==========================================================
-   SERIES CONFIGURATION
+   SERIES
 ========================================================== */
 
 const SERIES: {
@@ -106,196 +77,18 @@ const SERIES: {
 ];
 
 /* ==========================================================
-   SUPPORTED GRANULARITIES
-========================================================== */
-
-const STEPS = [
-  1000,
-  5000,
-  10_000,
-  30_000,
-  60_000,
-  300_000,
-  900_000,
-  1_800_000,
-  HOUR,
-  3 * HOUR,
-  6 * HOUR,
-  12 * HOUR,
-  DAY,
-  7 * DAY,
-  30 * DAY,
-  90 * DAY,
-  365 * DAY,
-];
-
-/* ==========================================================
    FORMATTERS
 ========================================================== */
 
 const numberFormat = new Intl.NumberFormat('es-ES');
 
 const percentageFormat = new Intl.NumberFormat('es-ES', {
-  maximumFractionDigits: 1,
   minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
 });
-
-/* ==========================================================
-   HELPERS
-========================================================== */
-
-function empty(): LogTimeCounts {
-  return {
-    error: 0,
-    warn: 0,
-    critical: 0,
-    other: 0,
-  };
-}
-
-function formatTime(time: number, withSeconds: boolean): string {
-  const iso = new Date(time).toISOString();
-
-  return withSeconds ? iso.slice(5, 19).replace('T', ' ') : iso.slice(5, 16).replace('T', ' ');
-}
 
 function fullTime(time: number): string {
   return new Date(time).toISOString().slice(0, 19).replace('T', ' ');
-}
-
-/* ==========================================================
-   SELECT TEMPORAL SERIES
-========================================================== */
-
-function pickSeries(data: LogTimeData, range: Range): LogTimeSeries {
-  if (range === '1h') {
-    return data.lastHour;
-  }
-
-  if (range === '6h' || range === '24h') {
-    return data.lastDay;
-  }
-
-  if (range === '7d') {
-    return data.lastWeek;
-  }
-
-  return data.all;
-}
-
-/* ==========================================================
-   BUILD TIMELINE
-========================================================== */
-
-function buildView(data: LogTimeData | undefined, range: Range): TimelineView | null {
-  if (!data || data.firstTime === null || data.lastTime === null) {
-    return null;
-  }
-
-  const source = pickSeries(data, range);
-
-  const duration = RANGES.find((item) => item.id === range)?.duration ?? null;
-
-  const from =
-    duration === null ? data.firstTime : Math.max(data.firstTime, data.lastTime - duration);
-
-  const until = data.lastTime;
-
-  const span = until - from;
-
-  /* ========================================================
-     ADAPTIVE BUCKET SIZE
-  ======================================================== */
-
-  const requiredStep = Math.max(source.stepMs, Math.ceil(span / 63));
-
-  const stepMs = STEPS.find((step) => step >= requiredStep) ?? Math.ceil(requiredStep / DAY) * DAY;
-
-  const first = Math.floor(from / stepMs) * stepMs;
-
-  const last = Math.floor(until / stepMs) * stepMs;
-
-  const count = Math.floor((last - first) / stepMs) + 1;
-
-  const times = Array.from({ length: count }, (_, index) => first + index * stepMs);
-
-  const bins = times.map(() => empty());
-
-  /* ========================================================
-     AGGREGATE SOURCE BUCKETS
-  ======================================================== */
-
-  for (const bucket of source.buckets) {
-    if (bucket.time + source.stepMs <= from || bucket.time > until) {
-      continue;
-    }
-
-    const index = Math.max(0, Math.min(count - 1, Math.floor((bucket.time - first) / stepMs)));
-
-    const target = bins[index];
-
-    target.error += bucket.counts.error;
-    target.warn += bucket.counts.warn;
-    target.critical += bucket.counts.critical;
-    target.other += bucket.counts.other;
-  }
-
-  const total = bins.reduce(
-    (sum, bucket) => sum + bucket.error + bucket.warn + bucket.critical + bucket.other,
-    0,
-  );
-
-  return {
-    times,
-
-    labels: times.map((time) => formatTime(time, stepMs < 60_000)),
-
-    bins,
-
-    stepMs,
-
-    total,
-  };
-}
-
-/* ==========================================================
-   SUMMARIZE ZOOM WINDOW
-========================================================== */
-
-function summarize(
-  view: TimelineView,
-  window: Window,
-): LogTimeCounts & {
-  total: number;
-  first: number;
-  last: number;
-} {
-  const maxIndex = view.bins.length - 1;
-
-  const from = Math.min(maxIndex, Math.max(0, Math.ceil((window.start / 100) * maxIndex - 1e-6)));
-
-  const to = Math.min(maxIndex, Math.max(from, Math.floor((window.end / 100) * maxIndex + 1e-6)));
-
-  const counts = empty();
-
-  for (let index = from; index <= to; index++) {
-    const row = view.bins[index];
-
-    counts.error += row.error;
-    counts.warn += row.warn;
-    counts.critical += row.critical;
-    counts.other += row.other;
-  }
-
-  return {
-    ...counts,
-
-    total: counts.error + counts.warn + counts.critical + counts.other,
-
-    first: view.times[from],
-
-    last: view.times[to],
-  };
 }
 
 /* ==========================================================
@@ -307,7 +100,7 @@ interface Props {
 }
 
 /* ==========================================================
-   NGINX ERROR TIMELINE
+   COMPONENT
 ========================================================== */
 
 export function NginxErrorTimeline({ temporal }: Props) {
@@ -334,13 +127,15 @@ export function NginxErrorTimeline({ temporal }: Props) {
      TIMELINE
   ======================================================== */
 
-  const view = useMemo(() => buildView(temporal, range), [temporal, range]);
+  const view = useMemo(() => buildTimelineView(temporal, range), [temporal, range]);
 
   const hasZoom = Boolean(
     view && view.times.length >= 12 && view.times.at(-1)! - view.times[0] >= 10 * 60_000,
   );
 
-  const stats = view ? summarize(view, hasZoom ? window : { start: 0, end: 100 }) : null;
+  const stats = view
+    ? summarizeTimelineView(view, hasZoom ? window : { start: 0, end: 100 })
+    : null;
 
   const isZoomed = hasZoom && (window.start > 0.1 || window.end < 99.9);
 
@@ -389,7 +184,9 @@ export function NginxErrorTimeline({ temporal }: Props) {
 
     const element = chartRef.current;
 
-    const chart = echarts.init(element, undefined, { renderer: 'canvas' });
+    const chart = echarts.init(element, undefined, {
+      renderer: 'canvas',
+    });
 
     instanceRef.current = chart;
 
@@ -397,6 +194,10 @@ export function NginxErrorTimeline({ temporal }: Props) {
       backgroundColor: 'transparent',
 
       animationDuration: 250,
+
+      /* ====================================================
+         GRID
+      ==================================================== */
 
       grid: {
         top: 18,
@@ -439,7 +240,6 @@ export function NginxErrorTimeline({ temporal }: Props) {
 
       xAxis: {
         type: 'category',
-
         boundaryGap: false,
 
         data: view.labels,
@@ -469,7 +269,6 @@ export function NginxErrorTimeline({ temporal }: Props) {
         type: 'value',
 
         min: 0,
-
         minInterval: 1,
 
         axisLabel: {
@@ -494,26 +293,38 @@ export function NginxErrorTimeline({ temporal }: Props) {
             {
               type: 'inside',
               id: 'inside',
+
               xAxisIndex: 0,
+
               start: 0,
               end: 100,
+
               filterMode: 'filter',
+
               zoomOnMouseWheel: false,
               moveOnMouseWheel: false,
             },
             {
               type: 'slider',
               id: 'slider',
+
               xAxisIndex: 0,
+
               start: 0,
               end: 100,
+
               filterMode: 'filter',
+
               bottom: 14,
               height: 24,
+
               showDetail: false,
               brushSelect: false,
+
               borderColor: 'rgba(153,106,217,.3)',
+
               backgroundColor: '#101735',
+
               fillerColor: 'rgba(168,65,217,.22)',
 
               handleStyle: {
@@ -580,7 +391,7 @@ export function NginxErrorTimeline({ temporal }: Props) {
     });
 
     /* ======================================================
-       DATAZOOM EVENT
+       DATAZOOM EVENTS
     ====================================================== */
 
     const onZoom = () => {
@@ -610,7 +421,7 @@ export function NginxErrorTimeline({ temporal }: Props) {
     chart.on('datazoom', onZoom);
 
     /* ======================================================
-       RESPONSIVE RESIZE
+       RESIZE
     ====================================================== */
 
     const observer = new ResizeObserver(() => {
@@ -686,7 +497,9 @@ export function NginxErrorTimeline({ temporal }: Props) {
 
   return (
     <article className="ll-dash-panel ll-dash-panel--chart ll-nginx-timeline">
-      {/* HEADER */}
+      {/* ====================================================
+          HEADER
+      ==================================================== */}
 
       <header className="ll-nginx-timeline__header">
         <div>
@@ -695,29 +508,44 @@ export function NginxErrorTimeline({ temporal }: Props) {
           <p>Eventos por severidad a lo largo del tiempo</p>
         </div>
 
-        {/* CONTROLS */}
-
         <div className="ll-nginx-timeline__controls">
-          <div className="ll-nginx-timeline__ranges" role="group" aria-label="Intervalo temporal">
-            {RANGES.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-pressed={range === item.id}
-                className={range === item.id ? 'is-active' : ''}
-                onClick={() => {
-                  setRange(item.id);
+          {/* TIME RANGE */}
 
-                  setWindow({
-                    start: 0,
-                    end: 100,
-                  });
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="ll-nginx-timeline__ranges" role="group" aria-label="Intervalo temporal">
+            {RANGES.map((item) => {
+              const available = isRangeAvailable(temporal, item.id);
+
+              return (
+                <span
+                  key={item.id}
+                  title={
+                    available
+                      ? item.label
+                      : 'El archivo no contiene suficiente período para que este filtro reduzca la vista.'
+                  }
+                >
+                  <button
+                    type="button"
+                    aria-pressed={range === item.id}
+                    className={range === item.id ? 'is-active' : ''}
+                    disabled={!available}
+                    onClick={() => {
+                      setRange(item.id);
+
+                      setWindow({
+                        start: 0,
+                        end: 100,
+                      });
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                </span>
+              );
+            })}
           </div>
+
+          {/* SEVERITY SELECT */}
 
           <select
             className="ll-nginx-timeline__select"
@@ -746,7 +574,9 @@ export function NginxErrorTimeline({ temporal }: Props) {
         </div>
       </header>
 
-      {/* TEMPORAL INFORMATION */}
+      {/* ====================================================
+          TEMPORAL INFORMATION
+      ==================================================== */}
 
       <div className="ll-nginx-timeline__meta">
         <span className="ll-nginx-timeline__complete">Análisis temporal completo</span>
@@ -762,6 +592,14 @@ export function NginxErrorTimeline({ temporal }: Props) {
           </span>
         )}
 
+        {view && stats && (
+          <span className="ll-nginx-timeline__period" aria-live="polite">
+            Período: {fullTime(stats.first)}
+            {' → '}
+            {fullTime(stats.last)}
+          </span>
+        )}
+
         {hasZoom && (
           <button type="button" onClick={resetZoom} disabled={!isZoomed}>
             Restablecer zoom
@@ -769,7 +607,9 @@ export function NginxErrorTimeline({ temporal }: Props) {
         )}
       </div>
 
-      {/* LEGEND */}
+      {/* ====================================================
+          LEGEND
+      ==================================================== */}
 
       <div className="ll-nginx-timeline__legend" role="group" aria-label="Categorías del gráfico">
         {SERIES.map((item) => (
@@ -793,7 +633,9 @@ export function NginxErrorTimeline({ temporal }: Props) {
         ))}
       </div>
 
-      {/* CHART */}
+      {/* ====================================================
+          CHART
+      ==================================================== */}
 
       {view ? (
         <div
@@ -806,7 +648,9 @@ export function NginxErrorTimeline({ temporal }: Props) {
         <p className="ll-dash-muted">No hay eventos con fechas válidas.</p>
       )}
 
-      {/* FOOTER */}
+      {/* ====================================================
+          FOOTER
+      ==================================================== */}
 
       {view && stats && (
         <footer className="ll-nginx-timeline__footer">
@@ -833,14 +677,6 @@ export function NginxErrorTimeline({ temporal }: Props) {
           </div>
 
           <div className="ll-nginx-timeline__footer-right">
-            {isZoomed && (
-              <span>
-                {fullTime(stats.first)}
-                {' → '}
-                {fullTime(stats.last)}
-              </span>
-            )}
-
             <button
               type="button"
               role="switch"
@@ -854,12 +690,14 @@ export function NginxErrorTimeline({ temporal }: Props) {
         </footer>
       )}
 
-      {/* DATAZOOM INFORMATION */}
+      {/* ====================================================
+          DATAZOOM INFORMATION
+      ==================================================== */}
 
       {hasZoom && (
         <p className="ll-nginx-timeline__hint">
-          Arrastra los extremos de la banda inferior para ampliar el período; desplázala para
-          navegar.
+          Arrastra la banda inferior para ampliar o desplazar la vista. Los totales del zoom
+          incluyen intervalos completos de la granularidad indicada.
         </p>
       )}
     </article>

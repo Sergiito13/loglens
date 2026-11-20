@@ -1,132 +1,259 @@
-/* LogLens — Nginx timeline: shared dashboard palette, adaptive layout. */
+/* ==========================================================
+   LOGLENS — NGINX ERROR TIMELINE
+========================================================== */
+
+/* ==========================================================
+   PANEL
+========================================================== */
+
 .ll-nginx-timeline {
   display: flex;
   flex-direction: column;
+
   min-width: 0;
+
   padding: 20px;
 }
+
+/* ==========================================================
+   HEADER
+========================================================== */
 
 .ll-nginx-timeline__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 16px;
 }
 
 .ll-nginx-timeline__header h2 {
   margin: 0;
+
   color: #f6f7ff;
+
   font-size: 17px;
   font-weight: 700;
 }
 
 .ll-nginx-timeline__header p {
   margin: 6px 0 0;
+
   color: #aebad8;
+
   font-size: 12px;
 }
+
+/* ==========================================================
+   CONTROLS
+========================================================== */
 
 .ll-nginx-timeline__controls {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
+
   gap: 10px;
 }
 
+/* ==========================================================
+   TIME RANGES
+========================================================== */
+
 .ll-nginx-timeline__ranges {
   display: flex;
+
   padding: 3px;
+
   border: 1px solid rgba(174, 105, 245, 0.3);
   border-radius: 9px;
+
   background: rgba(8, 13, 37, 0.4);
+}
+
+.ll-nginx-timeline__ranges > span {
+  display: inline-flex;
+
+  min-width: 0;
 }
 
 .ll-nginx-timeline__ranges button {
   min-width: 38px;
+  width: 100%;
+
   padding: 8px 10px;
+
   border: 1px solid transparent;
   border-radius: 7px;
+
   background: transparent;
+
   color: #aebad8;
+
   font-family: inherit;
   font-size: 11px;
   font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.ll-nginx-timeline__ranges button:hover:not(:disabled) {
+  color: #f6f7ff;
+
+  background: rgba(139, 53, 245, 0.12);
 }
 
 .ll-nginx-timeline__ranges button.is-active {
   border-color: rgba(185, 91, 255, 0.45);
+
   background: rgba(139, 53, 245, 0.24);
+
   color: #f6eaff;
 }
+
+.ll-nginx-timeline__ranges button:disabled {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   SEVERITY SELECTOR
+========================================================== */
 
 .ll-nginx-timeline__select {
   min-height: 36px;
   min-width: 155px;
+
   padding: 8px 10px;
+
   border: 1px solid rgba(174, 105, 245, 0.35);
   border-radius: 9px;
+
   background: #101735;
+
   color: #e8def9;
+
   font: inherit;
   font-size: 11px;
 }
+
+/* ==========================================================
+   TEMPORAL METADATA
+========================================================== */
 
 .ll-nginx-timeline__meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
   gap: 9px 16px;
+
   margin-top: 16px;
+
   color: #97a7cf;
+
   font-size: 11px;
 }
+
+/* ==========================================================
+   COMPLETE STATUS
+========================================================== */
 
 .ll-nginx-timeline__complete {
   padding: 6px 9px;
+
   border: 1px solid rgba(107, 191, 154, 0.22);
   border-radius: 8px;
+
   background: rgba(68, 160, 114, 0.08);
+
   color: #a1dbbd;
 }
 
+/* ==========================================================
+   TEMPORAL PERIOD
+========================================================== */
+
+.ll-nginx-timeline__period {
+  color: #d4c1f4;
+
+  font-variant-numeric: tabular-nums;
+
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================
+   RESET ZOOM BUTTON
+========================================================== */
+
 .ll-nginx-timeline__meta button {
   margin-left: auto;
+
   padding: 7px 11px;
+
   border: 1px solid rgba(174, 105, 245, 0.35);
   border-radius: 8px;
+
   background: rgba(139, 53, 245, 0.1);
+
   color: #decaff;
+
   font: inherit;
   font-size: 11px;
+
   cursor: pointer;
+}
+
+.ll-nginx-timeline__meta button:hover:not(:disabled) {
+  background: rgba(139, 53, 245, 0.2);
 }
 
 .ll-nginx-timeline__meta button:disabled {
   opacity: 0.42;
+
   cursor: not-allowed;
 }
 
+/* ==========================================================
+   LEGEND
+========================================================== */
+
 .ll-nginx-timeline__legend {
   display: flex;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+
   gap: 9px 20px;
+
   margin-top: 16px;
 }
 
 .ll-nginx-timeline__legend button {
   display: inline-flex;
   align-items: center;
+
   gap: 8px;
+
   padding: 5px 2px;
+
   border: 0;
+
   background: transparent;
+
   color: #c4cce5;
+
   font: inherit;
   font-size: 11px;
+
   cursor: pointer;
 }
 
@@ -136,42 +263,66 @@
 
 .ll-nginx-timeline__legend i {
   position: relative;
+
   width: 22px;
   height: 2px;
+
   background: var(--line-color);
 }
 
 .ll-nginx-timeline__legend i::after {
   position: absolute;
+
   top: 50%;
   left: 50%;
+
   width: 8px;
   height: 8px;
+
   border: 2px solid #f6f7ff;
   border-radius: 50%;
+
   background: var(--line-color);
+
   content: '';
+
   transform: translate(-50%, -50%);
 }
 
+/* ==========================================================
+   ECHARTS
+========================================================== */
+
 .ll-nginx-timeline__chart {
   position: relative;
+
   width: 100%;
   min-width: 0;
+
   height: clamp(315px, 24vw, 410px);
+
   margin-top: 8px;
 }
+
+/* ==========================================================
+   FOOTER
+========================================================== */
 
 .ll-nginx-timeline__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
   gap: 12px;
+
   margin-top: auto;
+
   padding: 12px;
+
   border: 1px solid rgba(153, 106, 217, 0.25);
   border-radius: 10px;
+
   background: rgba(16, 23, 53, 0.62);
 }
 
@@ -180,69 +331,103 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
   gap: 8px;
 }
 
+/* ==========================================================
+   TOTAL
+========================================================== */
+
 .ll-nginx-timeline__summary > span:first-child {
   margin-right: 5px;
+
   color: #aebad8;
+
   font-size: 11px;
 }
 
 .ll-nginx-timeline__summary strong {
   margin-left: 5px;
+
   color: #f6f7ff;
+
   font-size: 14px;
 }
 
+/* ==========================================================
+   PERCENTAGE BADGES
+========================================================== */
+
 .ll-nginx-timeline__badge {
   padding: 5px 9px;
+
   border: 1px solid color-mix(in srgb, var(--line-color) 45%, transparent);
+
   border-radius: 999px;
+
   background: color-mix(in srgb, var(--line-color) 10%, transparent);
+
   color: var(--line-color);
+
   font-size: 10px;
   font-weight: 700;
+
   white-space: nowrap;
 }
 
-.ll-nginx-timeline__footer-right > span {
-  color: #94a4ca;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-}
+/* ==========================================================
+   AREA TOGGLE
+========================================================== */
 
 .ll-nginx-timeline__footer-right button {
   display: inline-flex;
   align-items: center;
+
   gap: 9px;
+
   border: 0;
+
   background: transparent;
+
   color: #dce2f4;
+
   font: inherit;
   font-size: 11px;
+
   cursor: pointer;
 }
 
 .ll-nginx-timeline__footer-right button i {
   position: relative;
+
   display: inline-block;
+
   width: 36px;
   height: 20px;
+
   border-radius: 999px;
+
   background: #444a6d;
+
   transition: background 150ms;
 }
 
 .ll-nginx-timeline__footer-right button i::after {
   position: absolute;
+
   top: 3px;
   left: 3px;
+
   width: 14px;
   height: 14px;
+
   border-radius: 50%;
+
   background: #f8f5ff;
+
   content: '';
+
   transition: transform 150ms;
 }
 
@@ -254,12 +439,22 @@
   transform: translateX(16px);
 }
 
+/* ==========================================================
+   DATAZOOM HINT
+========================================================== */
+
 .ll-nginx-timeline__hint {
   margin: 10px 0 0;
+
   color: #8e9fc2;
+
   font-size: 11px;
   line-height: 1.5;
 }
+
+/* ==========================================================
+   ACCESSIBILITY
+========================================================== */
 
 .ll-nginx-timeline button:focus-visible,
 .ll-nginx-timeline select:focus-visible {
@@ -267,10 +462,15 @@
   outline-offset: 2px;
 }
 
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
 @media (max-width: 1400px) {
   .ll-nginx-timeline__header {
     flex-direction: column;
   }
+
   .ll-nginx-timeline__controls {
     justify-content: flex-start;
   }
@@ -280,41 +480,59 @@
   .ll-nginx-timeline {
     padding: 15px;
   }
+
   .ll-nginx-timeline__header h2 {
     font-size: 15px;
   }
+
   .ll-nginx-timeline__controls {
     width: 100%;
   }
+
   .ll-nginx-timeline__ranges {
-    width: 100%;
     display: grid;
+
     grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    width: 100%;
   }
+
   .ll-nginx-timeline__ranges button {
     min-width: 0;
+
     padding: 8px 3px;
   }
+
   .ll-nginx-timeline__select {
     width: 100%;
   }
+
   .ll-nginx-timeline__legend {
     justify-content: flex-start;
+
     gap: 8px 13px;
   }
+
   .ll-nginx-timeline__legend button {
     font-size: 10px;
   }
+
   .ll-nginx-timeline__chart {
     height: 280px;
   }
+
   .ll-nginx-timeline__footer {
     padding: 10px;
   }
+
   .ll-nginx-timeline__footer-right {
     width: 100%;
   }
 }
+
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .ll-nginx-timeline__footer-right button i,
