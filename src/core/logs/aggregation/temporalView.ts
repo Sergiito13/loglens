@@ -125,13 +125,42 @@ export function isRangeAvailable(data: LogTimeData | undefined, range: TemporalR
 }
 
 /* ==========================================================
-   AXIS LABEL
+   AXIS LABELS
 ========================================================== */
 
 function axisLabel(time: number, showSeconds: boolean): string {
   const iso = new Date(time).toISOString();
 
   return showSeconds ? iso.slice(5, 19).replace('T', ' ') : iso.slice(5, 16).replace('T', ' ');
+}
+
+/**
+ * Los buckets siguen alineados internamente para mantener
+ * correctas las agrupaciones y los totales.
+ *
+ * Para la presentación del eje X, sustituimos únicamente
+ * las etiquetas de los extremos por las fechas reales
+ * del archivo / período seleccionado.
+ */
+function buildAxisLabels(
+  times: readonly number[],
+  stepMs: number,
+  start: number,
+  end: number,
+): string[] {
+  const showSeconds = stepMs < 60_000;
+
+  return times.map((time, index) => {
+    if (index === 0) {
+      return axisLabel(start, showSeconds);
+    }
+
+    if (index === times.length - 1) {
+      return axisLabel(end, showSeconds);
+    }
+
+    return axisLabel(time, showSeconds);
+  });
 }
 
 /* ==========================================================
@@ -188,7 +217,7 @@ export function buildTimelineView(
     return {
       times,
 
-      labels: times.map((time) => axisLabel(time, source.stepMs < 60_000)),
+      labels: buildAxisLabels(times, source.stepMs, start, end),
 
       bins,
 
@@ -254,7 +283,7 @@ export function buildTimelineView(
   return {
     times,
 
-    labels: times.map((time) => axisLabel(time, stepMs < 60_000)),
+    labels: buildAxisLabels(times, stepMs, start, end),
 
     bins,
     stepMs,
