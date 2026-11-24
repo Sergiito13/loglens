@@ -1,0 +1,376 @@
+/* LogLens · diagnóstico. Mantiene la tarjeta original: contadores rosas a la derecha. */
+.ll-nginx-frequent-list {
+  gap: 6px;
+  padding: 0 6px;
+}
+.ll-nginx-frequent-list .ll-nginx-frequent-item {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  margin: 0;
+  border: 1px solid transparent;
+  border-bottom-color: rgba(119, 106, 181, 0.15);
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+.ll-nginx-frequent-list .ll-nginx-frequent-item:last-child {
+  border-bottom-color: transparent;
+}
+.ll-nginx-frequent-list .ll-nginx-frequent-item:hover {
+  background: rgba(139, 90, 194, 0.045);
+  border-color: rgba(139, 90, 194, 0.15);
+}
+.ll-nginx-frequent-list .ll-nginx-frequent-item:focus-visible,
+.ll-problem-dialog button:focus-visible,
+.ll-console button:focus-visible {
+  outline: 2px solid #ba79ef;
+  outline-offset: 2px;
+}
+
+.ll-problem-dialog {
+  box-sizing: border-box;
+  width: min(860px, calc(100vw - 28px));
+  max-width: 860px;
+  max-height: min(92dvh, 940px);
+  margin: auto;
+  padding: clamp(20px, 2.4vw, 30px);
+  overflow-y: auto;
+  border: 1px solid rgba(153, 109, 215, 0.48);
+  border-radius: 13px;
+  background: #0d1432;
+  color: #f5f5ff;
+  font-family: inherit;
+  box-shadow: 0 18px 45px rgba(2, 3, 18, 0.5);
+  overscroll-behavior: contain;
+}
+.ll-problem-dialog::backdrop {
+  background: rgba(4, 6, 23, 0.79);
+  backdrop-filter: blur(3px);
+}
+.ll-problem-dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(119, 106, 181, 0.24);
+}
+.ll-problem-dialog__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+.ll-problem-dialog__alert {
+  color: #ff3294;
+  flex: 0 0 28px;
+  margin-top: 2px;
+}
+.ll-problem-dialog__alert svg {
+  width: 28px;
+  height: 28px;
+}
+.ll-problem-dialog__titleline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ll-problem-dialog h2 {
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.025em;
+  color: #f6f5ff;
+}
+.ll-problem-dialog__level {
+  display: inline-flex;
+  padding: 4px 11px;
+  border: 1px solid rgba(255, 40, 143, 0.48);
+  border-radius: 999px;
+  background: rgba(242, 32, 127, 0.085);
+  color: #ff8db7;
+  font-size: 11px;
+  font-weight: 700;
+}
+.ll-problem-dialog__header p {
+  margin: 9px 0 0;
+  color: #c1cbe6;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.ll-problem-dialog__close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #bfc6e7;
+  cursor: pointer;
+}
+.ll-problem-dialog__close svg {
+  width: 18px;
+  height: 18px;
+}
+.ll-problem-dialog__close:hover {
+  border-color: rgba(153, 109, 215, 0.35);
+  background: rgba(153, 109, 215, 0.1);
+  color: white;
+}
+.ll-problem-dialog__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 225px);
+  gap: 28px;
+  margin-top: 22px;
+}
+.ll-problem-dialog__content section + section {
+  margin-top: 19px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(119, 106, 181, 0.2);
+}
+.ll-problem-dialog h3 {
+  margin: 0 0 10px;
+  color: #f3f4ff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.ll-problem-dialog__section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-bottom: 11px;
+}
+.ll-problem-dialog__section-heading h3 {
+  margin: 0;
+}
+.ll-problem-dialog__section-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 21px;
+  width: 21px;
+  height: 21px;
+  color: #bb94ed;
+}
+.ll-problem-dialog__section-icon svg {
+  width: 19px;
+  height: 19px;
+}
+.ll-problem-dialog__section-body {
+  padding-left: 31px;
+}
+.ll-problem-dialog__section-body ul {
+  padding-left: 17px;
+}
+.ll-problem-dialog__content p,
+.ll-problem-dialog__content li {
+  margin: 0;
+  color: #bfc9e4;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.ll-problem-dialog__content ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.ll-problem-dialog__content li + li {
+  margin-top: 6px;
+}
+.ll-problem-dialog__stats {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid rgba(140, 118, 192, 0.28);
+  border-radius: 10px;
+  background: rgba(20, 25, 58, 0.86);
+  font-variant-numeric: tabular-nums;
+}
+.ll-problem-dialog__stat-label {
+  color: #a4b1d1;
+  font-size: 10px;
+  font-weight: 600;
+}
+.ll-problem-dialog__count {
+  color: #ff83b7;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 770;
+}
+.ll-problem-dialog__stats > strong:not(.ll-problem-dialog__count) {
+  font-size: 17px;
+}
+.ll-problem-dialog__source {
+  color: #98a9d1;
+  font-size: 10px;
+}
+.ll-problem-dialog__stat-divider {
+  width: 100%;
+  height: 1px;
+  margin: 7px 0;
+  background: rgba(139, 118, 191, 0.23);
+}
+.ll-problem-dialog__time {
+  overflow-wrap: anywhere;
+  color: #e0e7fc;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.ll-problem-dialog__levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ll-problem-dialog__levels > span {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(137, 78, 202, 0.1);
+  border: 1px solid rgba(137, 78, 202, 0.26);
+}
+.ll-problem-dialog__levels small {
+  color: #c2b0df;
+  font-size: 10px;
+}
+.ll-problem-dialog__levels strong {
+  font-size: 11px;
+}
+.ll-problem-dialog__example {
+  margin-top: 23px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(119, 106, 181, 0.24);
+}
+.ll-problem-dialog__code {
+  position: relative;
+  min-height: 62px;
+  padding: 14px 43px 14px 14px;
+  border: 1px solid rgba(119, 106, 181, 0.32);
+  border-radius: 8px;
+  background: #090f28;
+}
+.ll-problem-dialog__code pre {
+  margin: 0;
+  color: #d4dcf2;
+  font:
+    11px/1.75 ui-monospace,
+    Consolas,
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 125px;
+  overflow: auto;
+}
+.ll-problem-dialog__code .ll-problem-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+.ll-problem-dialog__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 13px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(119, 106, 181, 0.24);
+}
+.ll-problem-dialog__investigate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 39px;
+  padding: 10px 15px;
+  border: 1px solid rgba(183, 114, 247, 0.6);
+  border-radius: 8px;
+  background: rgba(142, 64, 220, 0.23);
+  color: #f6e9ff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+.ll-problem-dialog__investigate svg {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+}
+.ll-problem-dialog__investigate:hover {
+  background: rgba(142, 64, 220, 0.35);
+  border-color: rgba(210, 156, 255, 0.8);
+}
+.ll-problem-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid rgba(139, 118, 191, 0.35);
+  border-radius: 8px;
+  background: rgba(19, 26, 60, 0.75);
+  color: #ddd5f1;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ll-problem-copy:hover {
+  border-color: rgba(168, 119, 222, 0.65);
+  background: rgba(137, 77, 196, 0.16);
+}
+.ll-problem-copy svg {
+  width: 15px;
+  height: 15px;
+}
+.ll-problem-copy--compact {
+  padding: 6px;
+  width: 28px;
+  height: 28px;
+  border-color: transparent;
+  background: transparent;
+}
+.ll-problem-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+@media (max-width: 680px) {
+  .ll-problem-dialog__layout {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .ll-problem-dialog__footer {
+    align-items: stretch;
+  }
+  .ll-problem-dialog__investigate {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ll-nginx-frequent-list .ll-nginx-frequent-item {
+    transition: none;
+  }
+}

@@ -1,0 +1,537 @@
+/* ==========================================================
+   LOGLENS — FULLSCREEN LOG EXPLORER
+   GitLab-inspired folding, original LogLens background.
+========================================================== */
+
+.ll-console,
+.ll-console *,
+.ll-console *::before,
+.ll-console *::after {
+  box-sizing: border-box;
+}
+
+.ll-console {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  isolation: isolate;
+  overflow: hidden;
+  background: #040925;
+  color: #f6f7ff;
+  font-family: inherit;
+}
+
+.ll-console:focus {
+  outline: none;
+}
+
+.ll-console__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(16px, 1.6vw, 28px);
+}
+
+.ll-console__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 16px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid rgba(153, 106, 217, 0.23);
+}
+
+.ll-console__heading {
+  min-width: 0;
+}
+
+.ll-console__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #c9a5f7;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.ll-console__back svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ll-console__back:hover {
+  color: #fff;
+}
+
+.ll-console__header h1 {
+  margin: 12px 0 6px;
+  font-size: clamp(25px, 2vw, 36px);
+  font-weight: 720;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.ll-console__heading p {
+  margin: 0;
+  color: #acb9da;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ll-console__heading p code {
+  color: #ff8db9;
+  font:
+    600 12px ui-monospace,
+    Consolas,
+    monospace;
+}
+
+.ll-console__heading p span {
+  padding: 0 7px;
+}
+
+.ll-console__readonly {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border: 1px solid rgba(153, 106, 217, 0.25);
+  border-radius: 8px;
+  background: rgba(12, 18, 49, 0.83);
+  color: #adbad8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+}
+
+.ll-console__readonly span {
+  padding: 0 3px;
+  color: #ac69f4;
+}
+
+.ll-console__notice {
+  flex: 0 0 auto;
+  margin: 16px 0;
+  padding: 10px 13px;
+  border: 1px solid rgba(153, 106, 217, 0.27);
+  border-radius: 9px;
+  background: rgba(14, 20, 54, 0.88);
+  color: #a6b6d8;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.ll-console__notice strong {
+  color: #dbc8f5;
+}
+
+.ll-console__notice code {
+  color: #ff8db9;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.ll-console__toolbar {
+  display: flex;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ll-console__toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: #a9b7d6;
+  font-size: 11px;
+}
+
+.ll-console__search {
+  flex: 1 1 260px;
+}
+
+.ll-console__filter {
+  flex: 0 1 160px;
+}
+
+.ll-console__toolbar input,
+.ll-console__toolbar select {
+  width: 100%;
+  min-height: 39px;
+  padding: 9px 12px;
+  border: 1px solid rgba(153, 106, 217, 0.32);
+  border-radius: 9px;
+  outline: none;
+  background: #101735;
+  color: #f6f7ff;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.ll-console__toolbar :is(input, select):focus-visible {
+  outline: 2px solid #be7cff;
+  outline-offset: 2px;
+}
+
+.ll-console__matches {
+  flex: 0 0 auto;
+  padding: 10px 0;
+  color: #a4b3d5;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.ll-console__matches strong {
+  color: #ff8db9;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   LOG EDITOR
+========================================================== */
+
+.ll-console__editor {
+  flex: 1 1 auto;
+  min-height: 170px;
+  min-width: 0;
+  overflow: auto;
+  border: 1px solid rgba(153, 106, 217, 0.28);
+  border-radius: 11px;
+  background: rgba(9, 14, 38, 0.94);
+  scrollbar-color: #4d376c #0c1231;
+  scrollbar-width: thin;
+}
+
+.ll-console__editor-head,
+.ll-console__line {
+  display: grid;
+  grid-template-columns: 78px 165px minmax(420px, 1fr);
+  align-items: stretch;
+  min-width: 780px;
+}
+
+.ll-console__editor-head {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: #151b3c;
+  color: #91a0c5;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+}
+
+.ll-console__editor-head span {
+  padding: 12px;
+}
+
+.ll-console__line {
+  min-height: 47px;
+  border-top: 1px solid rgba(119, 106, 181, 0.14);
+  color: #d7dff4;
+  font:
+    11px/1.75 ui-monospace,
+    Consolas,
+    'Liberation Mono',
+    monospace;
+}
+
+.ll-console__line--match {
+  background: rgba(139, 53, 245, 0.055);
+}
+
+.ll-console__line--match[data-level='error'] {
+  box-shadow: inset 3px 0 #f51a83;
+}
+
+.ll-console__line--match[data-level='warn'] {
+  box-shadow: inset 3px 0 #ff9850;
+}
+
+.ll-console__line--match[data-level='crit'],
+.ll-console__line--match[data-level='alert'],
+.ll-console__line--match[data-level='emerg'] {
+  box-shadow: inset 3px 0 #b24bff;
+}
+
+.ll-console__line--match[data-level='notice'],
+.ll-console__line--match[data-level='info'],
+.ll-console__line--match[data-level='debug'] {
+  box-shadow: inset 3px 0 #ffc448;
+}
+
+.ll-console__line--context {
+  background: rgba(7, 12, 32, 0.7);
+  color: #9eaaca;
+}
+
+.ll-console__line:hover {
+  background: rgba(139, 53, 245, 0.12);
+}
+
+.ll-console__line-number {
+  padding: 10px 12px;
+  border-right: 1px solid rgba(119, 106, 181, 0.11);
+  background: rgba(9, 15, 40, 0.55);
+  color: #8091bc;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.ll-console__line-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+}
+
+.ll-console__line-meta time {
+  color: #b6c3e4;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.ll-console__severity {
+  color: #b49df5;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.025em;
+}
+
+.ll-console__severity[data-level='error'] {
+  color: #ff70af;
+}
+.ll-console__severity[data-level='warn'] {
+  color: #ffa064;
+}
+.ll-console__severity[data-level='crit'],
+.ll-console__severity[data-level='alert'],
+.ll-console__severity[data-level='emerg'] {
+  color: #c57dff;
+}
+.ll-console__severity[data-level='notice'],
+.ll-console__severity[data-level='info'],
+.ll-console__severity[data-level='debug'] {
+  color: #ffc448;
+}
+
+.ll-console__line-code {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.ll-console__line-code code {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ll-console__line-code mark {
+  padding: 1px 3px;
+  border-radius: 3px;
+  background: rgba(245, 26, 131, 0.18);
+  color: #ff92bf;
+  font-weight: 700;
+}
+
+.ll-console__line-code .ll-problem-copy {
+  flex: 0 0 auto;
+  opacity: 0.3;
+  transition: opacity 140ms ease;
+}
+
+.ll-console__line:hover .ll-problem-copy,
+.ll-console__line:focus-within .ll-problem-copy {
+  opacity: 1;
+}
+
+/* ==========================================================
+   COLLAPSED CONTEXT GROUPS
+========================================================== */
+
+.ll-console__fold-group {
+  min-width: 780px;
+  border-top: 1px solid rgba(119, 106, 181, 0.13);
+}
+
+.ll-console__fold-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  min-height: 37px;
+  padding: 6px 20px;
+  border: 0;
+  background: rgba(26, 25, 68, 0.75);
+  color: #baa4ec;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.ll-console__fold-toggle:hover,
+.ll-console__fold-toggle:focus-visible {
+  background: rgba(112, 55, 179, 0.19);
+  color: #f3e7ff;
+}
+
+.ll-console__fold-toggle > svg {
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+}
+
+.ll-console__fold-rule {
+  flex: 1 1 auto;
+  border-top: 1px dashed rgba(174, 117, 241, 0.32);
+}
+
+.ll-console__fold-toggle > span:nth-last-child(2) {
+  flex: 0 0 auto;
+}
+
+.ll-console__fold-toggle small {
+  color: #8d9cbd;
+  font-size: 10px;
+}
+
+.ll-console__more-context {
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-top: 1px solid rgba(119, 106, 181, 0.16);
+  background: rgba(22, 24, 60, 0.78);
+  color: #d5b8ff;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ll-console__more-context:hover {
+  background: rgba(139, 53, 245, 0.15);
+}
+
+.ll-console__more-context span {
+  margin-left: 8px;
+  color: #91a1c1;
+}
+
+.ll-console__empty {
+  padding: 26px;
+  color: #aab8d9;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* ==========================================================
+   PAGINATION
+========================================================== */
+
+.ll-console__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px 0 0;
+  color: #aebbdc;
+  font-size: 11px;
+}
+
+.ll-console__footer strong {
+  color: #e8ebf8;
+  font-variant-numeric: tabular-nums;
+}
+
+.ll-console__footer-divider {
+  padding: 0 4px;
+}
+
+.ll-console__pager {
+  display: flex;
+  gap: 8px;
+}
+
+.ll-console__pager button {
+  min-height: 35px;
+  padding: 8px 14px;
+  border: 1px solid rgba(174, 105, 245, 0.34);
+  border-radius: 8px;
+  background: rgba(139, 53, 245, 0.11);
+  color: #e8d7ff;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ll-console__pager button:hover:not(:disabled) {
+  background: rgba(139, 53, 245, 0.21);
+}
+
+.ll-console__pager button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ll-console :is(button, input, select):focus-visible {
+  outline: 2px solid #c589ff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .ll-console__header {
+    align-items: flex-start;
+  }
+  .ll-console__readonly {
+    font-size: 9px;
+  }
+  .ll-console__matches {
+    width: 100%;
+  }
+  .ll-console__footer {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .ll-console__content {
+    padding: 14px 12px;
+  }
+  .ll-console__header {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  .ll-console__readonly {
+    align-self: flex-start;
+  }
+  .ll-console__filter {
+    flex: 1 1 150px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ll-console__line-code .ll-problem-copy {
+    transition: none;
+  }
+}

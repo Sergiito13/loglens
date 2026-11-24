@@ -1,23 +1,28 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   NGINX_PROBLEM_PATTERNS,
   aggregateRetainedNginxProblems,
 } from '../../../../../core/logs/analysis/nginxProblemPatterns';
+import type {
+  NginxProblemId,
+  NginxProblemSummary,
+} from '../../../../../core/logs/analysis/nginxProblemPatterns';
 import type { LogProcessingResult } from '../../../../../core/logs/processing/types';
+
+import { NginxProblemDialog } from './NginxProblemDialog';
 
 const nf = new Intl.NumberFormat('es-ES');
 
-interface NginxFrequentErrorsProps {
+interface Props {
   result: LogProcessingResult;
+  onExplore: (problem: NginxProblemSummary) => void;
 }
 
-/**
- * Mantiene el diseño original de LogLens, pero usa coincidencias de TODO
- * el archivo calculadas en el Worker, no solo las 10.000 entradas retenidas.
- */
-export function NginxFrequentErrors({ result }: NginxFrequentErrorsProps) {
+/** Mantiene el listado con el contador rosa a la derecha. */
+export function NginxFrequentErrors({ result, onExplore }: Props) {
   const complete = result.nginxProblems !== undefined;
+  const [selectedId, setSelectedId] = useState<NginxProblemId | null>(null);
 
   const frequent = useMemo(() => {
     const items = result.nginxProblems ?? aggregateRetainedNginxProblems(result.entries);
@@ -26,6 +31,8 @@ export function NginxFrequentErrors({ result }: NginxFrequentErrorsProps) {
       name: NGINX_PROBLEM_PATTERNS.find((pattern) => pattern.id === item.id)?.label ?? item.id,
     }));
   }, [result.entries, result.nginxProblems]);
+
+  const selected = selectedId ? (frequent.find((item) => item.id === selectedId) ?? null) : null;
 
   return (
     <section className="ll-dash-panel ll-nginx-frequent">
@@ -38,26 +45,44 @@ export function NginxFrequentErrors({ result }: NginxFrequentErrorsProps) {
           </p>
         </div>
       </div>
-
-      {frequent.length === 0 ? (
+      {frequent.length ? (
+        <div className="ll-nginx-frequent-list">
+          {frequent.map(({ id, name, count }) => (
+            <button
+              key={id}
+              type="button"
+              className="ll-nginx-frequent-item"
+              aria-haspopup="dialog"
+              aria-label={`Investigar ${name}: ${nf.format(count)} coincidencias`}
+              title={`Investigar ${name}`}
+              onClick={() => setSelectedId(id)}
+            >
+              <code>{name}</code>
+              <strong>{nf.format(count)}</strong>
+            </button>
+          ))}
+        </div>
+      ) : (
         <p className="ll-dash-muted">
           No se encontraron coincidencias con los patrones disponibles.
         </p>
-      ) : (
-        <div className="ll-nginx-frequent-list">
-          {frequent.map(({ id, name, count }) => (
-            <div className="ll-nginx-frequent-item" key={id}>
-              <code>{name}</code>
-              <strong>{nf.format(count)}</strong>
-            </div>
-          ))}
-        </div>
       )}
-
       {!complete && result.truncatedEntries && (
         <p className="ll-nginx-chart-note">
-          Estos recuentos corresponden a los registros conservados, no a todo el archivo.
+          Los recuentos corresponden a los registros conservados, no a todo el archivo.
         </p>
+      )}
+      {selected && (
+        <NginxProblemDialog
+          problem={selected}
+          totalRecords={complete ? result.parsedLines : result.entries.length}
+          complete={complete || !result.truncatedEntries}
+          onClose={() => setSelectedId(null)}
+          onExplore={() => {
+            setSelectedId(null);
+            onExplore(selected);
+          }}
+        />
       )}
     </section>
   );
