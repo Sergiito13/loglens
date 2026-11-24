@@ -1,5 +1,6 @@
 import type { LogDetectionResult } from '../detection/types';
 import type { LogEntry, LogParseIssue } from '../parsers/types';
+import type { NginxProblemSummary } from '../analysis/nginxProblemPatterns';
 
 /* ==========================================================
    LOGLENS — PROCESSING TYPES
@@ -90,6 +91,9 @@ export interface LogProcessingResult {
   levelCounts: Record<string, number>;
 
   temporal?: LogTimeData;
+
+  /** Recuentos para TODO el archivo Nginx (no solo las entradas retenidas). */
+  nginxProblems?: NginxProblemSummary[];
 
   truncatedEntries: boolean;
   truncatedIssues: boolean;

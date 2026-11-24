@@ -1,6 +1,7 @@
 import { detectFileFormat } from '../detection/detectLogFormat';
 import { logParsers } from '../parsers';
 import { LogTimeAggregator } from '../aggregation/LogTimeAggregator';
+import { NginxProblemAggregator } from '../analysis/nginxProblemPatterns';
 
 import type { LogEntry, LogParseIssue } from '../parsers/types';
 
@@ -13,7 +14,7 @@ import type {
 
 /* ==========================================================
    LOGLENS — FILE PROCESSING ENGINE
-   Streaming reader + full-file temporal aggregation
+   Streaming reader + full-file temporal and problem aggregation
 ========================================================== */
 
 const DEFAULT_CHUNK_BYTES = 256 * 1024;
@@ -55,9 +56,8 @@ function checkAborted(signal?: AbortSignal): void {
 /**
  * Process the entire file without loading it as one huge string.
  *
- * Full-file counters and temporal buckets are calculated
- * before applying the bounded retention limit used by
- * the explorer.
+ * Full-file counters, problem patterns and temporal buckets are calculated
+ * before applying the bounded retention limit used by the explorer.
  */
 export async function processLogFile(
   file: Blob,
@@ -111,10 +111,11 @@ export async function processLogFile(
   const levelCounts: Record<string, number> = {};
 
   /* ========================================================
-     TEMPORAL AGGREGATION
+     AGGREGATIONS
   ======================================================== */
 
   const timeAggregator = new LogTimeAggregator();
+  const problemAggregator = new NginxProblemAggregator();
 
   /* ========================================================
      3. PROGRESS REPORTING
@@ -194,8 +195,15 @@ export async function processLogFile(
          TEMPORAL AGGREGATION
       ==================================================== */
 
-      // Aggregate BEFORE applying the retention limit.
       timeAggregator.add(entry);
+
+      /* ====================================================
+         NGINX PROBLEM MATCHING — ALL PARSED ENTRIES
+      ==================================================== */
+
+      if (detection.format === 'nginx-error') {
+        problemAggregator.add(entry);
+      }
 
       /* ====================================================
          RETAIN ENTRIES
@@ -235,10 +243,6 @@ export async function processLogFile(
         continue;
       }
 
-      /* ====================================================
-         CRLF BOUNDARIES
-      ==================================================== */
-
       if (character === '\r' && i === text.length - 1 && !final) {
         break;
       }
@@ -258,19 +262,11 @@ export async function processLogFile(
       start = i + 1;
     }
 
-    /* ======================================================
-       PENDING CONTENT
-    ====================================================== */
-
     pending = text.slice(start);
 
     if (pending.length > MAX_LINE_CHARACTERS) {
       throw new RangeError('A log line exceeds the maximum supported length (1 MiB).');
     }
-
-    /* ======================================================
-       FINAL LINE
-    ====================================================== */
 
     if (final && pending.length > 0) {
       handleLine(pending);
@@ -295,10 +291,6 @@ export async function processLogFile(
     const chunk = await file.slice(offset, end).arrayBuffer();
 
     checkAborted(options.signal);
-
-    /* ======================================================
-       STREAMING UTF-8 DECODING
-    ====================================================== */
 
     consume(decoder.decode(new Uint8Array(chunk), { stream: true }));
 
@@ -340,11 +332,9 @@ export async function processLogFile(
 
     levelCounts,
 
-    /* ======================================================
-       COMPLETE TEMPORAL STATISTICS
-    ====================================================== */
-
     temporal: timeAggregator.result(),
+
+    nginxProblems: detection.format === 'nginx-error' ? problemAggregator.result() : undefined,
 
     truncatedEntries: entries.length < parsedLines,
 

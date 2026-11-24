@@ -120,9 +120,9 @@ export function NginxErrorDashboard({ file, result, onNewFile }: DashboardProps)
         />
       </section>
 
-      {/* FREQUENT ERRORS */}
+      {/* FREQUENT ERRORS — FULL FILE */}
 
-      <NginxFrequentErrors entries={result.entries} truncated={result.truncatedEntries} />
+      <NginxFrequentErrors result={result} />
 
       {/* LOG EXPLORER */}
 
